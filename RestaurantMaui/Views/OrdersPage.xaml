@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RestaurantMaui.ViewModels"
+             xmlns:models="clr-namespace:RestaurantMaui.Models"
+             x:Class="RestaurantMaui.Views.OrdersPage"
+             x:DataType="vm:OrdersViewModel"
+             BackgroundColor="#F5F5F5"
+             Title="الطلبات">
+
+	<Grid RowDefinitions="Auto,Auto,*,Auto">
+
+		<!-- Toolbar -->
+		<Grid Grid.Row="0" Padding="16,12" BackgroundColor="White"
+              ColumnDefinitions="*,Auto,Auto">
+			<VerticalStackLayout Grid.Column="0">
+				<Label Text="إدارة الطلبات" FontSize="18" FontAttributes="Bold" TextColor="#212121" />
+				<Label Text="{Binding OrdersCount}" FontSize="12" TextColor="#757575" />
+			</VerticalStackLayout>
+			<Button Grid.Column="1" Text="🔄" Command="{Binding RefreshCommand}"
+                    BackgroundColor="#F5F5F5" TextColor="#FF5722"
+                    CornerRadius="8" WidthRequest="44" HeightRequest="44" Margin="4,0" />
+			<Button Grid.Column="2" Text="📋 تفاصيل"
+                    Command="{Binding ViewDetailsCommand}"
+                    IsEnabled="{Binding SelectedOrder, Converter={StaticResource NotNullConverter}}"
+                    BackgroundColor="#FF5722" TextColor="White"
+                    CornerRadius="10" HeightRequest="44" Padding="12,0" />
+		</Grid>
+
+		<!-- Status Filter -->
+		<ScrollView Grid.Row="1" Orientation="Horizontal"
+                    BackgroundColor="White" Padding="8,8">
+			<HorizontalStackLayout Spacing="8" Padding="8,0">
+				<BindableLayout.ItemsSource>
+					<x:Array Type="{x:Type x:String}">
+						<x:String>الكل</x:String>
+						<x:String>Pending</x:String>
+						<x:String>Accepted</x:String>
+						<x:String>Preparing</x:String>
+						<x:String>ReadyForPickup</x:String>
+						<x:String>OnTheWay</x:String>
+						<x:String>Delivered</x:String>
+						<x:String>Cancelled</x:String>
+					</x:Array>
+				</BindableLayout.ItemsSource>
+				<BindableLayout.ItemTemplate>
+					<DataTemplate x:DataType="x:String">
+						<Button Text="{Binding .}"
+                                Padding="16,6"
+                                CornerRadius="20"
+                                FontSize="12"
+                                BackgroundColor="#F5F5F5"
+                                TextColor="#757575"
+                                HeightRequest="36"
+                                Clicked="OnStatusFilterClicked" />
+					</DataTemplate>
+				</BindableLayout.ItemTemplate>
+			</HorizontalStackLayout>
+		</ScrollView>
+
+		<!-- Orders List -->
+		<RefreshView Grid.Row="2" Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+			<CollectionView ItemsSource="{Binding Orders}"
+                            SelectionMode="Single"
+                            SelectedItem="{Binding SelectedOrder}"
+                            EmptyView="لا توجد طلبات لهذه الحالة">
+				<CollectionView.ItemTemplate>
+					<DataTemplate x:DataType="models:OrderDetail">
+						<Frame Margin="12,4" CornerRadius="14" BackgroundColor="White"
+                               HasShadow="True" BorderColor="Transparent" Padding="16">
+							<Grid ColumnDefinitions="4,*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12">
+								<!-- Color Bar -->
+								<BoxView Grid.Column="0" Grid.RowSpan="3"
+                                         Color="{Binding StatusColor}"
+                                         CornerRadius="2" WidthRequest="4" />
+
+								<!-- Row 1: اسم العميل + رقم الأوردر -->
+								<Label Grid.Row="0" Grid.Column="1"
+                                       Text="{Binding CustomerName}"
+                                       FontAttributes="Bold" FontSize="15" TextColor="#212121" />
+								<Label Grid.Row="0" Grid.Column="2"
+                                       Text="{Binding Id, StringFormat='#{0}'}"
+                                       FontSize="13" TextColor="#BDBDBD"
+                                       VerticalOptions="Center" />
+
+								<!-- Row 2: الحالة + المبلغ -->
+								<Label Grid.Row="1" Grid.Column="1"
+                                       Text="{Binding StatusArabic}"
+                                       TextColor="{Binding StatusColor}"
+                                       FontAttributes="Bold" FontSize="13" />
+								<Label Grid.Row="1" Grid.Column="2"
+                                       Text="{Binding TotalFormatted}"
+                                       FontAttributes="Bold" FontSize="15"
+                                       TextColor="#FF5722" />
+
+								<!-- Row 3: التاريخ + العنوان -->
+								<Label Grid.Row="2" Grid.Column="1"
+                                       Text="{Binding CreatedFormatted}"
+                                       FontSize="11" TextColor="#9E9E9E" />
+								<Label Grid.Row="2" Grid.Column="2"
+                                       Text="{Binding CustomerPhone}"
+                                       FontSize="11" TextColor="#9E9E9E" />
+							</Grid>
+						</Frame>
+					</DataTemplate>
+				</CollectionView.ItemTemplate>
+			</CollectionView>
+		</RefreshView>
+
+		<!-- Action Buttons (ظاهرة لما يكون في أوردر محدد) -->
+		<Frame Grid.Row="3"
+               IsVisible="{Binding SelectedOrder, Converter={StaticResource NotNullConverter}}"
+               BackgroundColor="White" BorderColor="Transparent"
+               CornerRadius="0" Padding="12">
+			<VerticalStackLayout Spacing="8">
+				<Label Text="{Binding SelectedOrder.StatusArabic, StringFormat='الأوردر المحدد: {0}'}"
+                       FontSize="13" TextColor="#757575" HorizontalOptions="Center" />
+				<ScrollView Orientation="Horizontal">
+					<HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+						<Button Text="✅ قبول"
+                                Command="{Binding ChangeStatusCommand}"
+                                CommandParameter="Accepted"
+                                BackgroundColor="#0288D1" TextColor="White"
+                                CornerRadius="10" HeightRequest="44" Padding="16,0"
+                                IsVisible="{Binding SelectedOrder.NextStatuses,
+                                    Converter={StaticResource ArrayContainsConverter},
+                                    ConverterParameter=Accepted}" />
+						<Button Text="👨‍🍳 تحضير"
+                                Command="{Binding ChangeStatusCommand}"
+                                CommandParameter="Preparing"
+                                BackgroundColor="#7B1FA2" TextColor="White"
+                                CornerRadius="10" HeightRequest="44" Padding="16,0"
+                                IsVisible="{Binding SelectedOrder.NextStatuses,
+                                    Converter={StaticResource ArrayContainsConverter},
+                                    ConverterParameter=Preparing}" />
+						<Button Text="📦 جاهز"
+                                Command="{Binding ChangeStatusCommand}"
+                                CommandParameter="ReadyForPickup"
+                                BackgroundColor="#00796B" TextColor="White"
+                                CornerRadius="10" HeightRequest="44" Padding="16,0"
+                                IsVisible="{Binding SelectedOrder.NextStatuses,
+                                    Converter={StaticResource ArrayContainsConverter},
+                                    ConverterParameter=ReadyForPickup}" />
+						<Button Text="🛵 في الطريق"
+                                Command="{Binding ChangeStatusCommand}"
+                                CommandParameter="OnTheWay"
+                                BackgroundColor="#FF5722" TextColor="White"
+                                CornerRadius="10" HeightRequest="44" Padding="16,0"
+                                IsVisible="{Binding SelectedOrder.NextStatuses,
+                                    Converter={StaticResource ArrayContainsConverter},
+                                    ConverterParameter=OnTheWay}" />
+						<Button Text="✔️ تسليم"
+                                Command="{Binding ChangeStatusCommand}"
+                                CommandParameter="Delivered"
+                                BackgroundColor="#388E3C" TextColor="White"
+                                CornerRadius="10" HeightRequest="44" Padding="16,0"
+                                IsVisible="{Binding SelectedOrder.NextStatuses,
+                                    Converter={StaticResource ArrayContainsConverter},
+                                    ConverterParameter=Delivered}" />
+						<Button Text="🚫 رفض"
+                                Command="{Binding ChangeStatusCommand}"
+                                CommandParameter="Rejected"
+                                BackgroundColor="#D32F2F" TextColor="White"
+                                CornerRadius="10" HeightRequest="44" Padding="16,0"
+                                IsVisible="{Binding SelectedOrder.NextStatuses,
+                                    Converter={StaticResource ArrayContainsConverter},
+                                    ConverterParameter=Rejected}" />
+					</HorizontalStackLayout>
+				</ScrollView>
+			</VerticalStackLayout>
+		</Frame>
+
+	</Grid>
+</ContentPage>

@@ -1,0 +1,52 @@
+﻿using CommunityToolkit.Maui;
+using Microsoft.Extensions.Logging;
+using RestaurantMaui.Services;
+using RestaurantMaui.ViewModels;
+using RestaurantMaui.Views;
+
+
+namespace RestaurantMaui;
+
+public static class MauiProgram
+{
+    public static MauiApp CreateMauiApp()
+    {
+        var builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<App>()
+            .UseMauiCommunityToolkit()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+            });
+
+        // ── Services (Singletons) ────────────────────────────────────────────────
+        builder.Services.AddSingleton<ApiService>();
+        builder.Services.AddSingleton<HubService>();
+
+        // ── ViewModels ───────────────────────────────────────────────────────────
+        builder.Services.AddTransient<LoginViewModel>();
+        builder.Services.AddTransient<DashboardViewModel>();
+        builder.Services.AddTransient<OrdersViewModel>();
+        builder.Services.AddTransient<MenuViewModel>();
+        builder.Services.AddTransient<SettingsViewModel>();
+        builder.Services.AddTransient<OrderDetailViewModel>();
+        builder.Services.AddTransient<ProductFormViewModel>();
+
+        // ── Pages ────────────────────────────────────────────────────────────────
+        builder.Services.AddTransient<LoginPage>();
+        builder.Services.AddTransient<DashboardPage>();
+        builder.Services.AddTransient<OrdersPage>();
+        builder.Services.AddTransient<MenuPage>();
+        builder.Services.AddTransient<SettingsPage>();
+        builder.Services.AddTransient<OrderDetailPage>();
+        builder.Services.AddTransient<ProductFormPage>();
+
+#if DEBUG
+        builder.Logging.AddDebug();
+#endif
+
+        return builder.Build();
+    }
+}

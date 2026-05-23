@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RestaurantMaui.ViewModels"
+             xmlns:models="clr-namespace:RestaurantMaui.Models"
+             x:Class="RestaurantMaui.Views.DashboardPage"
+             x:DataType="vm:DashboardViewModel"
+             BackgroundColor="#F5F5F5"
+             Title="الرئيسية">
+
+	<RefreshView Command="{Binding LoadCommand}" IsRefreshing="{Binding IsBusy}">
+		<ScrollView>
+			<VerticalStackLayout Padding="16" Spacing="16">
+
+				<!-- Header -->
+				<Grid ColumnDefinitions="*,Auto" Margin="0,8,0,0">
+					<VerticalStackLayout Grid.Column="0">
+						<Label Text="لوحة التحكم" FontSize="22" FontAttributes="Bold" TextColor="#212121" />
+						<Label Text="{Binding RestaurantName}" FontSize="14" TextColor="#757575" />
+					</VerticalStackLayout>
+					<Button Grid.Column="1" Text="🔄 تحديث"
+                            Command="{Binding LoadCommand}"
+                            BackgroundColor="#FF5722" TextColor="White"
+                            CornerRadius="10" HeightRequest="40" Padding="16,0" />
+				</Grid>
+
+				<!-- Stat Cards - على الديسك توب يتحط جنب بعض -->
+				<FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Start">
+
+					<!-- اليوم -->
+					<Frame Margin="4" CornerRadius="16" BackgroundColor="White"
+                           HasShadow="True" BorderColor="Transparent"
+                           WidthRequest="{OnPlatform Default=240, Android=160, iOS=160}">
+						<VerticalStackLayout Spacing="4">
+							<BoxView HeightRequest="4" CornerRadius="2" Color="#FF5722" />
+							<Label Text="📦" FontSize="28" Margin="0,8,0,0" />
+							<Label Text="{Binding TodayOrders}" FontSize="32" FontAttributes="Bold" TextColor="#FF5722" />
+							<Label Text="طلبات اليوم" FontSize="13" TextColor="#757575" />
+						</VerticalStackLayout>
+					</Frame>
+
+					<!-- الإيراد -->
+					<Frame Margin="4" CornerRadius="16" BackgroundColor="White"
+                           HasShadow="True" BorderColor="Transparent"
+                           WidthRequest="{OnPlatform Default=240, Android=160, iOS=160}">
+						<VerticalStackLayout Spacing="4">
+							<BoxView HeightRequest="4" CornerRadius="2" Color="#388E3C" />
+							<Label Text="💰" FontSize="28" Margin="0,8,0,0" />
+							<Label Text="{Binding TodayRevenue}" FontSize="24" FontAttributes="Bold" TextColor="#388E3C" />
+							<Label Text="إيراد اليوم" FontSize="13" TextColor="#757575" />
+						</VerticalStackLayout>
+					</Frame>
+
+					<!-- انتظار -->
+					<Frame Margin="4" CornerRadius="16" BackgroundColor="White"
+                           HasShadow="True" BorderColor="Transparent"
+                           WidthRequest="{OnPlatform Default=240, Android=160, iOS=160}">
+						<VerticalStackLayout Spacing="4">
+							<BoxView HeightRequest="4" CornerRadius="2" Color="#F57C00" />
+							<Label Text="⏳" FontSize="28" Margin="0,8,0,0" />
+							<Label Text="{Binding PendingOrders}" FontSize="32" FontAttributes="Bold" TextColor="#F57C00" />
+							<Label Text="في الانتظار" FontSize="13" TextColor="#757575" />
+						</VerticalStackLayout>
+					</Frame>
+
+					<!-- تحضير -->
+					<Frame Margin="4" CornerRadius="16" BackgroundColor="White"
+                           HasShadow="True" BorderColor="Transparent"
+                           WidthRequest="{OnPlatform Default=240, Android=160, iOS=160}">
+						<VerticalStackLayout Spacing="4">
+							<BoxView HeightRequest="4" CornerRadius="2" Color="#0288D1" />
+							<Label Text="👨‍🍳" FontSize="28" Margin="0,8,0,0" />
+							<Label Text="{Binding PreparingOrders}" FontSize="32" FontAttributes="Bold" TextColor="#0288D1" />
+							<Label Text="جاري التحضير" FontSize="13" TextColor="#757575" />
+						</VerticalStackLayout>
+					</Frame>
+
+				</FlexLayout>
+
+				<!-- Recent Orders -->
+				<Label Text="آخر الطلبات" FontSize="18" FontAttributes="Bold" TextColor="#212121" />
+
+				<CollectionView ItemsSource="{Binding RecentOrders}" EmptyView="لا توجد طلبات">
+					<CollectionView.ItemTemplate>
+						<DataTemplate x:DataType="models:OrderDetail">
+							<Frame Margin="0,4" CornerRadius="12" BackgroundColor="White"
+                                   HasShadow="True" BorderColor="Transparent" Padding="16">
+								<Grid ColumnDefinitions="*,Auto,Auto" RowDefinitions="Auto,Auto">
+									<!-- اسم العميل -->
+									<Label Grid.Row="0" Grid.Column="0"
+                                           Text="{Binding CustomerName}"
+                                           FontAttributes="Bold" FontSize="15" TextColor="#212121" />
+									<!-- الحالة -->
+									<Label Grid.Row="0" Grid.Column="1"
+                                           Text="{Binding StatusArabic}"
+                                           TextColor="{Binding StatusColor}"
+                                           FontAttributes="Bold" FontSize="13"
+                                           VerticalOptions="Center" Margin="8,0" />
+									<!-- المبلغ -->
+									<Label Grid.Row="0" Grid.Column="2"
+                                           Text="{Binding TotalFormatted}"
+                                           FontAttributes="Bold" FontSize="15"
+                                           TextColor="#FF5722" VerticalOptions="Center" />
+									<!-- التاريخ -->
+									<Label Grid.Row="1" Grid.Column="0"
+                                           Text="{Binding CreatedFormatted}"
+                                           FontSize="12" TextColor="#9E9E9E" />
+									<!-- رقم الأوردر -->
+									<Label Grid.Row="1" Grid.Column="2"
+                                           Text="{Binding Id, StringFormat='#{0}'}"
+                                           FontSize="12" TextColor="#BDBDBD" />
+								</Grid>
+							</Frame>
+						</DataTemplate>
+					</CollectionView.ItemTemplate>
+				</CollectionView>
+
+				<ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                                   Color="#FF5722" HorizontalOptions="Center" />
+
+			</VerticalStackLayout>
+		</ScrollView>
+	</RefreshView>
+</ContentPage>

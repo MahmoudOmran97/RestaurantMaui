@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RestaurantMaui.ViewModels"
+             x:Class="RestaurantMaui.Views.LoginPage"
+             x:DataType="vm:LoginViewModel"
+             BackgroundColor="#F5F5F5"
+             Title="">
+
+	<Grid>
+		<!-- خلفية ملوّنة -->
+		<BoxView Color="#FF5722" VerticalOptions="Start" HeightRequest="260" />
+
+		<ScrollView>
+			<VerticalStackLayout Padding="24" Spacing="0">
+
+				<!-- Header Section -->
+				<VerticalStackLayout Spacing="8" Margin="0,48,0,32" HorizontalOptions="Center">
+					<Label Text="🍽️" FontSize="64" HorizontalOptions="Center" />
+					<Label Text="Restaurant Manager"
+                           FontSize="26" FontAttributes="Bold"
+                           TextColor="White" HorizontalOptions="Center" />
+					<Label Text="لوحة تحكم المطعم"
+                           FontSize="14" TextColor="#FFCCBC" HorizontalOptions="Center" />
+				</VerticalStackLayout>
+
+				<!-- Card -->
+				<Frame BackgroundColor="White" CornerRadius="20"
+                       Padding="28,24" HasShadow="True" BorderColor="Transparent"
+                       MaximumWidthRequest="480" HorizontalOptions="Center"
+                       WidthRequest="{OnPlatform Default=480, Android=-1, iOS=-1}">
+					<VerticalStackLayout Spacing="16">
+
+						<Label Text="تسجيل الدخول" FontSize="20" FontAttributes="Bold"
+                               TextColor="#212121" HorizontalOptions="Center" />
+
+						<!-- Email -->
+						<VerticalStackLayout Spacing="4">
+							<Label Text="البريد الإلكتروني" FontSize="13" TextColor="#757575" />
+							<Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
+								<Entry Text="{Binding Email}" Placeholder="example@email.com"
+                                       Keyboard="Email" BackgroundColor="Transparent"
+                                       Margin="8,2" FontSize="15" />
+							</Border>
+						</VerticalStackLayout>
+
+						<!-- Password -->
+						<VerticalStackLayout Spacing="4">
+							<Label Text="كلمة المرور" FontSize="13" TextColor="#757575" />
+							<Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
+								<Entry Text="{Binding Password}" Placeholder="••••••••"
+                                       IsPassword="True" BackgroundColor="Transparent"
+                                       Margin="8,2" FontSize="15" />
+							</Border>
+						</VerticalStackLayout>
+
+						<!-- API URL -->
+						<VerticalStackLayout Spacing="4">
+							<Label Text="رابط السيرفر (API)" FontSize="13" TextColor="#757575" />
+							<Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
+								<Entry Text="{Binding ApiUrl}" Placeholder="https://yourserver.com"
+                                       BackgroundColor="Transparent" Margin="8,2" FontSize="13" />
+							</Border>
+						</VerticalStackLayout>
+
+						<!-- Error -->
+						<Label Text="{Binding ErrorMessage}" TextColor="#D32F2F"
+                               FontSize="13" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringToBoolConverter}}"
+                               HorizontalOptions="Center" />
+
+						<!-- Login Button -->
+						<Button Text="{Binding IsBusy, Converter={StaticResource BusyTextConverter}, ConverterParameter='تسجيل الدخول|جاري التسجيل...'}"
+                                Command="{Binding LoginCommand}"
+                                IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                                BackgroundColor="#FF5722" TextColor="White"
+                                CornerRadius="12" HeightRequest="52"
+                                FontSize="16" FontAttributes="Bold"
+                                Margin="0,8,0,0" />
+
+						<!-- Loading -->
+						<ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                                           Color="#FF5722" HorizontalOptions="Center" />
+
+					</VerticalStackLayout>
+				</Frame>
+
+				<Label Text="Restaurant Manager v1.0"
+                       TextColor="#9E9E9E" FontSize="12"
+                       HorizontalOptions="Center" Margin="0,24,0,0" />
+
+			</VerticalStackLayout>
+		</ScrollView>
+	</Grid>
+</ContentPage>

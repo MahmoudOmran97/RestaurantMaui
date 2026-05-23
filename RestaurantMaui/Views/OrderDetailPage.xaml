@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RestaurantMaui.ViewModels"
+             xmlns:models="clr-namespace:RestaurantMaui.Models"
+             x:Class="RestaurantMaui.Views.OrderDetailPage"
+             x:DataType="vm:OrderDetailViewModel"
+             BackgroundColor="#F5F5F5"
+             Title="تفاصيل الأوردر">
+
+	<Shell.BackButtonBehavior>
+		<BackButtonBehavior Command="{Binding GoBackCommand}" />
+	</Shell.BackButtonBehavior>
+
+	<ScrollView>
+		<VerticalStackLayout Padding="16" Spacing="12"
+                             IsVisible="{Binding Order, Converter={StaticResource NotNullConverter}}">
+
+			<!-- Header Card -->
+			<Frame CornerRadius="16" BackgroundColor="White" HasShadow="True" BorderColor="Transparent">
+				<Grid ColumnDefinitions="*,Auto">
+					<VerticalStackLayout Grid.Column="0" Spacing="4">
+						<Label Text="{Binding Order.Id, StringFormat='طلب رقم #{0}'}"
+                               FontSize="20" FontAttributes="Bold" TextColor="#212121" />
+						<Label Text="{Binding Order.CreatedFormatted}"
+                               FontSize="13" TextColor="#9E9E9E" />
+						<Label Text="{Binding Order.StatusArabic}"
+                               TextColor="{Binding Order.StatusColor}"
+                               FontAttributes="Bold" FontSize="16" />
+					</VerticalStackLayout>
+					<VerticalStackLayout Grid.Column="1" HorizontalOptions="End" Spacing="4">
+						<Label Text="{Binding Order.TotalFormatted}"
+                               FontSize="24" FontAttributes="Bold" TextColor="#FF5722"
+                               HorizontalOptions="End" />
+						<Label Text="{Binding Order.PaymentMethod}"
+                               FontSize="12" TextColor="#757575" HorizontalOptions="End" />
+					</VerticalStackLayout>
+				</Grid>
+			</Frame>
+
+			<!-- Customer Info -->
+			<Frame CornerRadius="16" BackgroundColor="White" HasShadow="True" BorderColor="Transparent">
+				<VerticalStackLayout Spacing="8">
+					<Label Text="👤 بيانات العميل" FontSize="16" FontAttributes="Bold" TextColor="#212121" />
+					<BoxView HeightRequest="1" Color="#F0F0F0" />
+					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="6">
+						<Label Grid.Row="0" Grid.Column="0" Text="الاسم:" TextColor="#757575" FontSize="13" />
+						<Label Grid.Row="0" Grid.Column="1" Text="{Binding Order.CustomerName}" FontSize="13" TextColor="#212121" />
+						<Label Grid.Row="1" Grid.Column="0" Text="الهاتف:" TextColor="#757575" FontSize="13" />
+						<Label Grid.Row="1" Grid.Column="1" Text="{Binding Order.CustomerPhone}" FontSize="13" TextColor="#212121" />
+						<Label Grid.Row="2" Grid.Column="0" Text="العنوان:" TextColor="#757575" FontSize="13" />
+						<Label Grid.Row="2" Grid.Column="1" Text="{Binding Order.DeliveryAddress}" FontSize="13" TextColor="#212121" />
+					</Grid>
+				</VerticalStackLayout>
+			</Frame>
+
+			<!-- Items -->
+			<Frame CornerRadius="16" BackgroundColor="White" HasShadow="True" BorderColor="Transparent">
+				<VerticalStackLayout Spacing="8">
+					<Label Text="🛍️ تفاصيل الطلب" FontSize="16" FontAttributes="Bold" TextColor="#212121" />
+					<BoxView HeightRequest="1" Color="#F0F0F0" />
+					<CollectionView ItemsSource="{Binding Order.Items}">
+						<CollectionView.ItemTemplate>
+							<DataTemplate x:DataType="models:OrderItemDto">
+								<Grid ColumnDefinitions="*,Auto" Padding="0,6">
+									<VerticalStackLayout Grid.Column="0">
+										<Label Text="{Binding ProductName}"
+                                               FontAttributes="Bold" FontSize="14" TextColor="#212121" />
+										<Label Text="{Binding Notes}" FontSize="12" TextColor="#9E9E9E"
+                                               IsVisible="{Binding Notes, Converter={StaticResource StringToBoolConverter}}" />
+									</VerticalStackLayout>
+									<Label Grid.Column="1" Text="{Binding PriceText}"
+                                           FontSize="13" TextColor="#757575" VerticalOptions="Center" />
+								</Grid>
+							</DataTemplate>
+						</CollectionView.ItemTemplate>
+					</CollectionView>
+					<BoxView HeightRequest="1" Color="#F0F0F0" />
+					<!-- Totals -->
+					<Grid ColumnDefinitions="*,Auto">
+						<Label Grid.Column="0" Text="المجموع الفرعي:" TextColor="#757575" FontSize="13" />
+						<Label Grid.Column="1" Text="{Binding Order.SubTotal, StringFormat='{0:F0} EGP'}"
+                               FontSize="13" TextColor="#212121" />
+					</Grid>
+					<Grid ColumnDefinitions="*,Auto">
+						<Label Grid.Column="0" Text="رسوم التوصيل:" TextColor="#757575" FontSize="13" />
+						<Label Grid.Column="1" Text="{Binding Order.DeliveryFee, StringFormat='{0:F0} EGP'}"
+                               FontSize="13" TextColor="#212121" />
+					</Grid>
+					<Grid ColumnDefinitions="*,Auto">
+						<Label Grid.Column="0" Text="الإجمالي:" FontAttributes="Bold" FontSize="15" TextColor="#212121" />
+						<Label Grid.Column="1" Text="{Binding Order.TotalFormatted}"
+                               FontAttributes="Bold" FontSize="15" TextColor="#FF5722" />
+					</Grid>
+				</VerticalStackLayout>
+			</Frame>
+
+			<!-- Action Buttons -->
+			<Frame CornerRadius="16" BackgroundColor="White" HasShadow="True" BorderColor="Transparent"
+                   IsVisible="{Binding Order.CanChangeStatus}">
+				<VerticalStackLayout Spacing="8">
+					<Label Text="تغيير الحالة" FontSize="16" FontAttributes="Bold" TextColor="#212121" />
+					<FlexLayout Wrap="Wrap" JustifyContent="Start">
+						<Button Text="✅ قبول"
+                                Command="{Binding ChangeStatusCommand}"
+                                CommandParameter="Accepted"
+                                BackgroundColor="#0288D1" TextColor="White"
+                                CornerRadius="10" HeightRequest="44" Padding="16,0" Margin="4"
+                                IsVisible="{Binding Order.NextStatuses,
+                                    Converter={StaticResource ArrayContainsConverter},
+                                    ConverterParameter=Accepted}" />
+						<Button Text="👨‍🍳 تحضير"
+                                Command="{Binding ChangeStatusCommand}"
+                                CommandParameter="Preparing"
+                                BackgroundColor="#7B1FA2" TextColor="White"
+                                CornerRadius="10" HeightRequest="44" Padding="16,0" Margin="4"
+                                IsVisible="{Binding Order.NextStatuses,
+                                    Converter={StaticResource ArrayContainsConverter},
+                                    ConverterParameter=Preparing}" />
+						<Button Text="📦 جاهز للاستلام"
+                                Command="{Binding ChangeStatusCommand}"
+                                CommandParameter="ReadyForPickup"
+                                BackgroundColor="#00796B" TextColor="White"
+                                CornerRadius="10" HeightRequest="44" Padding="16,0" Margin="4"
+                                IsVisible="{Binding Order.NextStatuses,
+                                    Converter={StaticResource ArrayContainsConverter},
+                                    ConverterParameter=ReadyForPickup}" />
+						<Button Text="🛵 في الطريق"
+                                Command="{Binding ChangeStatusCommand}"
+                                CommandParameter="OnTheWay"
+                                BackgroundColor="#FF5722" TextColor="White"
+                                CornerRadius="10" HeightRequest="44" Padding="16,0" Margin="4"
+                                IsVisible="{Binding Order.NextStatuses,
+                                    Converter={StaticResource ArrayContainsConverter},
+                                    ConverterParameter=OnTheWay}" />
+						<Button Text="✔️ تم التسليم"
+                                Command="{Binding ChangeStatusCommand}"
+                                CommandParameter="Delivered"
+                                BackgroundColor="#388E3C" TextColor="White"
+                                CornerRadius="10" HeightRequest="44" Padding="16,0" Margin="4"
+                                IsVisible="{Binding Order.NextStatuses,
+                                    Converter={StaticResource ArrayContainsConverter},
+                                    ConverterParameter=Delivered}" />
+						<Button Text="🚫 رفض"
+                                Command="{Binding ChangeStatusCommand}"
+                                CommandParameter="Rejected"
+                                BackgroundColor="#D32F2F" TextColor="White"
+                                CornerRadius="10" HeightRequest="44" Padding="16,0" Margin="4"
+                                IsVisible="{Binding Order.NextStatuses,
+                                    Converter={StaticResource ArrayContainsConverter},
+                                    ConverterParameter=Rejected}" />
+					</FlexLayout>
+				</VerticalStackLayout>
+			</Frame>
+
+			<ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               Color="#FF5722" HorizontalOptions="Center" />
+
+		</VerticalStackLayout>
+	</ScrollView>
+</ContentPage>

@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RestaurantMaui.ViewModels"
+             xmlns:models="clr-namespace:RestaurantMaui.Models"
+             x:Class="RestaurantMaui.Views.ProductFormPage"
+             x:DataType="vm:ProductFormViewModel"
+             BackgroundColor="#F5F5F5"
+             Title="{Binding PageTitle}">
+
+	<ScrollView>
+		<VerticalStackLayout Padding="16" Spacing="16"
+                             MaximumWidthRequest="600" HorizontalOptions="Center">
+
+			<!-- Main Card -->
+			<Frame CornerRadius="16" BackgroundColor="White" HasShadow="True" BorderColor="Transparent" Padding="20">
+				<VerticalStackLayout Spacing="14">
+
+					<!-- Category Picker -->
+					<VerticalStackLayout Spacing="4">
+						<Label Text="الفئة *" FontSize="13" TextColor="#757575" />
+						<Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
+							<Picker ItemsSource="{Binding CategoryItems}"
+                                    SelectedItem="{Binding SelectedCategory}"
+                                    ItemDisplayBinding="{Binding Name}"
+                                    Title="اختر الفئة"
+                                    BackgroundColor="Transparent" Margin="8,2" />
+						</Border>
+					</VerticalStackLayout>
+
+					<!-- Name -->
+					<VerticalStackLayout Spacing="4">
+						<Label Text="اسم المنتج *" FontSize="13" TextColor="#757575" />
+						<Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
+							<Entry Text="{Binding Name}" Placeholder="مثال: بيتزا مارجريتا"
+                                   BackgroundColor="Transparent" Margin="8,2" FontSize="15" />
+						</Border>
+					</VerticalStackLayout>
+
+					<!-- Description -->
+					<VerticalStackLayout Spacing="4">
+						<Label Text="الوصف" FontSize="13" TextColor="#757575" />
+						<Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
+							<Editor Text="{Binding Description}" Placeholder="وصف المنتج..."
+                                    BackgroundColor="Transparent" Margin="8,2"
+                                    HeightRequest="80" FontSize="14" />
+						</Border>
+					</VerticalStackLayout>
+
+					<!-- Price Row -->
+					<Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+						<VerticalStackLayout Grid.Column="0" Spacing="4">
+							<Label Text="السعر الأصلي (EGP) *" FontSize="13" TextColor="#757575" />
+							<Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
+								<Entry Text="{Binding Price}" Keyboard="Numeric"
+                                       BackgroundColor="Transparent" Margin="8,2" FontSize="15" />
+							</Border>
+						</VerticalStackLayout>
+						<VerticalStackLayout Grid.Column="1" Spacing="4">
+							<Label Text="السعر بعد الخصم (0 = بدون)" FontSize="13" TextColor="#757575" />
+							<Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
+								<Entry Text="{Binding DiscountedPrice}" Keyboard="Numeric"
+                                       BackgroundColor="Transparent" Margin="8,2" FontSize="15" />
+							</Border>
+						</VerticalStackLayout>
+					</Grid>
+
+					<!-- Image URL -->
+					<VerticalStackLayout Spacing="4">
+						<Label Text="رابط الصورة (URL)" FontSize="13" TextColor="#757575" />
+						<Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
+							<Entry Text="{Binding ImageUrl}" Placeholder="https://..."
+                                   BackgroundColor="Transparent" Margin="8,2" FontSize="13"
+                                   Keyboard="Url" />
+						</Border>
+					</VerticalStackLayout>
+
+					<!-- Prep Time + Calories -->
+					<Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+						<VerticalStackLayout Grid.Column="0" Spacing="4">
+							<Label Text="وقت التحضير (دقيقة)" FontSize="13" TextColor="#757575" />
+							<Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
+								<Entry Text="{Binding PreparationTime}" Keyboard="Numeric"
+                                       BackgroundColor="Transparent" Margin="8,2" FontSize="15" />
+							</Border>
+						</VerticalStackLayout>
+						<VerticalStackLayout Grid.Column="1" Spacing="4">
+							<Label Text="السعرات الحرارية" FontSize="13" TextColor="#757575" />
+							<Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
+								<Entry Text="{Binding Calories}" Keyboard="Numeric"
+                                       BackgroundColor="Transparent" Margin="8,2" FontSize="15" />
+							</Border>
+						</VerticalStackLayout>
+					</Grid>
+
+				</VerticalStackLayout>
+			</Frame>
+
+			<!-- Buttons -->
+			<Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+				<Button Grid.Column="0" Text="إلغاء"
+                        Command="{Binding CancelCommand}"
+                        BackgroundColor="#9E9E9E" TextColor="White"
+                        CornerRadius="12" HeightRequest="52" FontSize="16" />
+				<Button Grid.Column="1"
+                        Text="{Binding IsEdit, Converter={StaticResource BoolToStringConverter},
+                               ConverterParameter='💾 حفظ التعديلات|➕ إضافة المنتج'}"
+                        Command="{Binding SaveCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                        BackgroundColor="#FF5722" TextColor="White"
+                        CornerRadius="12" HeightRequest="52" FontSize="16" FontAttributes="Bold" />
+			</Grid>
+
+			<ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               Color="#FF5722" HorizontalOptions="Center" />
+
+		</VerticalStackLayout>
+	</ScrollView>
+</ContentPage>

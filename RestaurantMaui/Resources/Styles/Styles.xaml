@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    xmlns:conv="clr-namespace:RestaurantMaui.Converters">
+
+    <!-- ── Converters (registered here so all pages can use them) ── -->
+    <conv:StringToBoolConverter    x:Key="StringToBoolConverter" />
+    <conv:InverseBoolConverter     x:Key="InverseBoolConverter" />
+    <conv:NotNullConverter         x:Key="NotNullConverter" />
+    <conv:BoolToStringConverter    x:Key="BoolToStringConverter" />
+    <conv:BusyTextConverter        x:Key="BusyTextConverter" />
+    <conv:ArrayContainsConverter   x:Key="ArrayContainsConverter" />
+    <conv:BoolToColorConverter     x:Key="BoolToColorConverter" />
+    <conv:StatusTextColorConverter x:Key="StatusTextColorConverter" />
+
+    <!-- ── Global Styles ── -->
+    <Style TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+    </Style>
+
+    <Style TargetType="Entry">
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+        <Setter Property="PlaceholderColor" Value="{StaticResource TextSecondary}" />
+    </Style>
+
+    <Style TargetType="Button">
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="FontAttributes" Value="None" />
+    </Style>
+
+    <Style TargetType="Frame">
+        <Setter Property="BorderColor" Value="Transparent" />
+    </Style>
+
+    <!-- Shell Tab Bar styling -->
+    <Style TargetType="TabBar">
+        <Setter Property="Shell.TabBarBackgroundColor" Value="White" />
+        <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource Primary}" />
+        <Setter Property="Shell.TabBarUnselectedColor" Value="{StaticResource TextSecondary}" />
+    </Style>
+
+</ResourceDictionary>
