@@ -41,9 +41,6 @@
 		<!-- Category Filter -->
 		<ScrollView Grid.Row="1" Orientation="Horizontal"
                     BackgroundColor="White" Padding="8,8">
-			<BindableLayout.ItemsSource>
-				<x:Reference Name="categoryList" />
-			</BindableLayout.ItemsSource>
 			<HorizontalStackLayout x:Name="categoryButtons" Spacing="8" Padding="8,0">
 				<BindableLayout.ItemsSource>
 					<Binding Path="Categories" />
@@ -63,8 +60,7 @@
 		<!-- Products Grid -->
 		<RefreshView Grid.Row="2" Command="{Binding LoadCommand}" IsRefreshing="{Binding IsBusy}">
 			<CollectionView ItemsSource="{Binding Products}"
-                            SelectionMode="Single"
-                            SelectedItem="{Binding SelectedProduct}"
+                            SelectionMode="None"
                             EmptyView="لا توجد منتجات">
 
 				<!-- Desktop: Grid layout | Mobile: list -->
@@ -77,6 +73,15 @@
 					<DataTemplate x:DataType="models:ProductDto">
 						<Frame Margin="6" CornerRadius="14" BackgroundColor="White"
                                HasShadow="True" BorderColor="Transparent" Padding="12">
+
+							<!-- TapGestureRecognizer يحل مشكلة السيليكت على أندرويد -->
+							<Frame.GestureRecognizers>
+								<TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MenuViewModel}},
+                                             Path=SelectProductCommand}"
+                                    CommandParameter="{Binding .}" />
+							</Frame.GestureRecognizers>
+
 							<VerticalStackLayout Spacing="6">
 								<!-- Image -->
 								<Frame CornerRadius="10" IsClippedToBounds="True"

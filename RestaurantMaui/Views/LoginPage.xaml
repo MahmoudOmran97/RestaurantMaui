@@ -54,6 +54,16 @@
 							</Border>
 						</VerticalStackLayout>
 
+						<!-- Restaurant ID -->
+						<VerticalStackLayout Spacing="4">
+							<Label Text="رقم المطعم (Restaurant ID)" FontSize="13" TextColor="#757575" />
+							<Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
+								<Entry Text="{Binding RestaurantIdText}" Placeholder="1"
+                                       Keyboard="Numeric" BackgroundColor="Transparent"
+                                       Margin="8,2" FontSize="15" />
+							</Border>
+						</VerticalStackLayout>
+
 						<!-- API URL -->
 						<VerticalStackLayout Spacing="4">
 							<Label Text="رابط السيرفر (API)" FontSize="13" TextColor="#757575" />

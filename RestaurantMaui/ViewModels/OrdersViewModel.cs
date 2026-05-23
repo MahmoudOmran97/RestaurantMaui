@@ -52,6 +52,13 @@ public partial class OrdersViewModel : ObservableObject
         finally { IsBusy = false; }
     }
 
+    // ← command جديد للـ TapGestureRecognizer على أندرويد
+    [RelayCommand]
+    void SelectOrder(OrderDetail order)
+    {
+        SelectedOrder = SelectedOrder?.Id == order.Id ? null : order;
+    }
+
     [RelayCommand]
     async Task ChangeStatusAsync(string newStatus)
     {

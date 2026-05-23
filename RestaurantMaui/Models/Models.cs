@@ -205,3 +205,28 @@ public class ApiResult
     public bool Ok { get; set; }
     public string Error { get; set; } = string.Empty;
 }
+// قسم مبسّط للعرض في قائمة الأقسام
+public class CategorySimpleDto
+{
+    [JsonProperty("id")] public int Id { get; set; }
+    [JsonProperty("name")] public string Name { get; set; } = string.Empty;
+    [JsonProperty("imageUrl")] public string? ImageUrl { get; set; }
+    [JsonProperty("sortOrder")] public int SortOrder { get; set; }
+    [JsonProperty("productCount")] public int ProductCount { get; set; }
+}
+
+// لإضافة قسم جديد
+public class CreateCategoryRequest
+{
+    public int RestaurantId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? ImageUrl { get; set; }
+}
+
+// لتعديل قسم
+public class UpdateCategoryRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string? ImageUrl { get; set; }
+    public int SortOrder { get; set; }
+}

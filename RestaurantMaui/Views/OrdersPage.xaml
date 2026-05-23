@@ -61,13 +61,21 @@
 		<!-- Orders List -->
 		<RefreshView Grid.Row="2" Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
 			<CollectionView ItemsSource="{Binding Orders}"
-                            SelectionMode="Single"
-                            SelectedItem="{Binding SelectedOrder}"
+                            SelectionMode="None"
                             EmptyView="لا توجد طلبات لهذه الحالة">
 				<CollectionView.ItemTemplate>
 					<DataTemplate x:DataType="models:OrderDetail">
 						<Frame Margin="12,4" CornerRadius="14" BackgroundColor="White"
                                HasShadow="True" BorderColor="Transparent" Padding="16">
+
+							<!-- TapGestureRecognizer يحل مشكلة السيليكت على أندرويد -->
+							<Frame.GestureRecognizers>
+								<TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OrdersViewModel}},
+                                             Path=SelectOrderCommand}"
+                                    CommandParameter="{Binding .}" />
+							</Frame.GestureRecognizers>
+
 							<Grid ColumnDefinitions="4,*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12">
 								<!-- Color Bar -->
 								<BoxView Grid.Column="0" Grid.RowSpan="3"
@@ -93,7 +101,7 @@
                                        FontAttributes="Bold" FontSize="15"
                                        TextColor="#FF5722" />
 
-								<!-- Row 3: التاريخ + العنوان -->
+								<!-- Row 3: التاريخ + التليفون -->
 								<Label Grid.Row="2" Grid.Column="1"
                                        Text="{Binding CreatedFormatted}"
                                        FontSize="11" TextColor="#9E9E9E" />

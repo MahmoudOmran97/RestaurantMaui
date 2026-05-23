@@ -11,10 +11,17 @@ public partial class LoginViewModel : ObservableObject
     [ObservableProperty] string email = string.Empty;
     [ObservableProperty] string password = string.Empty;
     [ObservableProperty] string apiUrl = AppConfig.BaseUrl;
+    [ObservableProperty] string restaurantIdText = AppConfig.RestaurantId.ToString();
     [ObservableProperty] string errorMessage = string.Empty;
     [ObservableProperty] bool isBusy = false;
 
     public LoginViewModel(ApiService api) => _api = api;
+
+    partial void OnRestaurantIdTextChanged(string value)
+    {
+        if (int.TryParse(value, out var id) && id > 0)
+            AppConfig.RestaurantId = id;
+    }
 
     [RelayCommand]
     async Task LoginAsync()
@@ -25,9 +32,17 @@ public partial class LoginViewModel : ObservableObject
             return;
         }
 
+        if (!int.TryParse(RestaurantIdText, out var restId) || restId <= 0)
+        {
+            ErrorMessage = "برجاء إدخال رقم المطعم بشكل صحيح";
+            return;
+        }
+
         // تحديث رابط الـ API لو تغيّر
         if (!string.IsNullOrWhiteSpace(ApiUrl))
             AppConfig.BaseUrl = ApiUrl.TrimEnd('/');
+
+        AppConfig.RestaurantId = restId;
 
         IsBusy = true;
         ErrorMessage = string.Empty;
@@ -48,11 +63,7 @@ public partial class LoginViewModel : ObservableObject
         AppSession.FullName = result.Data.FullName;
         AppSession.Email = result.Data.Email;
         AppSession.Role = result.Data.Role;
-
-        // جلب أول مطعم
-        var restaurants = await _api.GetRestaurantsAsync(pageSize: 5);
-        if (restaurants?.Data?.Count > 0)
-            AppSession.RestaurantId = restaurants.Data[0].Id;
+        AppSession.RestaurantId = restId;
 
         // الانتقال للـ Shell الرئيسي
         Application.Current!.Windows[0].Page = new AppShell();

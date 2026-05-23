@@ -60,10 +60,16 @@ public partial class MenuViewModel : ObservableObject
         ProductsCount = $"{Products.Count} منتج";
     }
 
+    // ← command جديد للـ TapGestureRecognizer على أندرويد
+    [RelayCommand]
+    void SelectProduct(ProductDto product)
+    {
+        SelectedProduct = SelectedProduct?.Id == product.Id ? null : product;
+    }
+
     [RelayCommand]
     async Task AddProductAsync()
     {
-        var categories = _allCategories.Select(c => new { c.Id, c.Name }).ToList();
         var param = new Dictionary<string, object>
         {
             ["IsEdit"] = false,

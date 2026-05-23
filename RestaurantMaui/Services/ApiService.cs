@@ -24,7 +24,40 @@ public class ApiService
             _http.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", AppSession.Token);
     }
+    public async Task<List<CategorySimpleDto>?> GetCategoriesAsync(int restaurantId)
+    {
+        SetAuth();
+        var res = await _http.GetAsync($"{AppConfig.ApiBaseUrl}/categories/restaurant/{restaurantId}");
+        if (!res.IsSuccessStatusCode) return null;
+        return Deserialize<List<CategorySimpleDto>>(await res.Content.ReadAsStringAsync());
+    }
 
+    public async Task<ApiResult> CreateCategoryAsync(CreateCategoryRequest req)
+    {
+        SetAuth();
+        var res = await _http.PostAsync($"{AppConfig.ApiBaseUrl}/categories", ToJson(req));
+        return res.IsSuccessStatusCode
+            ? new ApiResult { Ok = true }
+            : new ApiResult { Ok = false, Error = "فشل إضافة القسم: " + res.StatusCode };
+    }
+
+    public async Task<ApiResult> UpdateCategoryAsync(int id, UpdateCategoryRequest req)
+    {
+        SetAuth();
+        var res = await _http.PutAsync($"{AppConfig.ApiBaseUrl}/categories/{id}", ToJson(req));
+        return res.IsSuccessStatusCode
+            ? new ApiResult { Ok = true }
+            : new ApiResult { Ok = false, Error = "فشل تعديل القسم: " + res.StatusCode };
+    }
+
+    public async Task<ApiResult> DeleteCategoryAsync(int id)
+    {
+        SetAuth();
+        var res = await _http.DeleteAsync($"{AppConfig.ApiBaseUrl}/categories/{id}");
+        return res.IsSuccessStatusCode
+            ? new ApiResult { Ok = true }
+            : new ApiResult { Ok = false, Error = "فشل حذف القسم: " + res.StatusCode };
+    }
     private static StringContent ToJson(object obj) =>
         new(JsonConvert.SerializeObject(obj), Encoding.UTF8, "application/json");
 
