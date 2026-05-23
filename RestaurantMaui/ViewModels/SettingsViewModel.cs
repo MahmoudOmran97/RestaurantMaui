@@ -107,10 +107,27 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     async Task ToggleOpenAsync()
     {
+        if (IsBusy) return;
         IsBusy = true;
-        await _api.ToggleRestaurantStatusAsync(AppSession.RestaurantId);
-        IsBusy = false;
-        await LoadInfoAsync();
+        InfoStatus = "جاري التحديث...";
+        try
+        {
+            var ok = await _api.ToggleRestaurantStatusAsync(AppSession.RestaurantId);
+            if (ok)
+            {
+                IsOpen = !IsOpen;
+                InfoStatus = IsOpen ? "✅ المطعم مفتوح الآن" : "✅ المطعم مغلق الآن";
+            }
+            else
+            {
+                InfoStatus = "❌ فشل تحديث الحالة";
+            }
+        }
+        catch
+        {
+            InfoStatus = "❌ خطأ في الاتصال";
+        }
+        finally { IsBusy = false; }
     }
 
     [RelayCommand]

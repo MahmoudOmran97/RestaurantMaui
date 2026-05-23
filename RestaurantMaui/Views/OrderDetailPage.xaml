@@ -15,7 +15,22 @@
 	<ScrollView>
 		<VerticalStackLayout Padding="16" Spacing="12"
                              IsVisible="{Binding Order, Converter={StaticResource NotNullConverter}}">
-
+			<Grid ColumnDefinitions="Auto,*" Margin="0,0,0,4">
+				<Button Grid.Column="0"
+                        Text="← رجوع"
+                        Command="{Binding GoBackCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="#FF5722"
+                        FontSize="15"
+                        Padding="0"
+                        HorizontalOptions="Start" />
+				<Label Grid.Column="1"
+                       Text="تفاصيل الأوردر"
+                       FontSize="18" FontAttributes="Bold"
+                       TextColor="#212121"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+			</Grid>
 			<!-- Header Card -->
 			<Frame CornerRadius="16" BackgroundColor="White" HasShadow="True" BorderColor="Transparent">
 				<Grid ColumnDefinitions="*,Auto">
