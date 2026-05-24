@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using RestaurantMaui.Models;
 using RestaurantMaui.Services;
 using System.Data;
+using static SkiaSharp.HarfBuzz.SKShaper;
 
 
 namespace RestaurantMaui.ViewModels;
@@ -20,6 +21,8 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] string restPhone = string.Empty;
     [ObservableProperty] string restAddress = string.Empty;
     [ObservableProperty] string restDesc = string.Empty;
+    [ObservableProperty] string restLat = string.Empty;
+    [ObservableProperty] string restLng = string.Empty;
     [ObservableProperty] string deliveryFee = "0";
     [ObservableProperty] string minOrder = "0";
     [ObservableProperty] string estimatedTime = "30";
@@ -66,6 +69,8 @@ public partial class SettingsViewModel : ObservableObject
             RestPhone = rest.Phone ?? string.Empty;
             RestAddress = rest.Address;
             RestDesc = rest.Description ?? string.Empty;
+            RestLat = rest.Latitude.ToString("F6");
+            RestLng = rest.Longitude.ToString("F6");
             DeliveryFee = rest.DeliveryFee.ToString("F0");
             MinOrder = rest.MinOrderAmount.ToString("F0");
             EstimatedTime = rest.EstimatedTime.ToString();
@@ -90,6 +95,8 @@ public partial class SettingsViewModel : ObservableObject
                 Phone = RestPhone,
                 Address = RestAddress,
                 Description = RestDesc,
+                Latitude = double.TryParse(RestLat, out var lat) ? lat : 0,
+                Longitude = double.TryParse(RestLng, out var lng) ? lng : 0,
                 DeliveryFee = decimal.TryParse(DeliveryFee, out var df) ? df : 0,
                 MinOrderAmount = decimal.TryParse(MinOrder, out var mo) ? mo : 0,
                 EstimatedTime = int.TryParse(EstimatedTime, out var et) ? et : 30,

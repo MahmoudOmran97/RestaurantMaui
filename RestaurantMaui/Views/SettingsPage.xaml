@@ -105,6 +105,39 @@
 						</Border>
 					</VerticalStackLayout>
 
+					<!-- الموقع الجغرافي -->
+					<Border StrokeShape="RoundRectangle 12" Stroke="#FF572233" StrokeThickness="1.5"
+                            BackgroundColor="#FFF8F6" Padding="12">
+						<VerticalStackLayout Spacing="10">
+							<HorizontalStackLayout Spacing="6">
+								<Label Text="📍" FontSize="16" VerticalOptions="Center" />
+								<Label Text="إحداثيات المطعم على الخريطة"
+                                       FontSize="14" FontAttributes="Bold"
+                                       TextColor="#FF5722" VerticalOptions="Center" />
+							</HorizontalStackLayout>
+							<Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+								<VerticalStackLayout Grid.Column="0" Spacing="4">
+									<Label Text="خط العرض — Latitude" FontSize="11" TextColor="#9E9E9E" />
+									<Border StrokeShape="RoundRectangle 10" Stroke="#FF5722" StrokeThickness="1.5">
+										<Entry Text="{Binding RestLat}" Keyboard="Numeric"
+                                               Placeholder="30.0444"
+                                               BackgroundColor="Transparent" Margin="8,2" FontSize="14" />
+									</Border>
+								</VerticalStackLayout>
+								<VerticalStackLayout Grid.Column="1" Spacing="4">
+									<Label Text="خط الطول — Longitude" FontSize="11" TextColor="#9E9E9E" />
+									<Border StrokeShape="RoundRectangle 10" Stroke="#FF5722" StrokeThickness="1.5">
+										<Entry Text="{Binding RestLng}" Keyboard="Numeric"
+                                               Placeholder="31.2357"
+                                               BackgroundColor="Transparent" Margin="8,2" FontSize="14" />
+									</Border>
+								</VerticalStackLayout>
+							</Grid>
+							<Label Text="💡 افتح Google Maps ← ابحث عن مطعمك ← انقر عليه ← الإحداثيات بتبان في الأسفل"
+                                   FontSize="11" TextColor="#9E9E9E" />
+						</VerticalStackLayout>
+					</Border>
+
 					<!-- وصف -->
 					<VerticalStackLayout Spacing="4">
 						<Label Text="الوصف" FontSize="13" TextColor="#757575" />

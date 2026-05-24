@@ -3,132 +3,140 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:RestaurantMaui.ViewModels"
              xmlns:models="clr-namespace:RestaurantMaui.Models"
+             xmlns:ff="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
              x:Class="RestaurantMaui.Views.MenuPage"
              x:DataType="vm:MenuViewModel"
              BackgroundColor="#F5F5F5"
              Title="المنيو">
 
-	<Grid RowDefinitions="Auto,Auto,*,Auto">
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
 
-		<!-- Toolbar -->
-		<Grid Grid.Row="0" Padding="16,12" BackgroundColor="White"
+        <!-- Toolbar -->
+        <Grid Grid.Row="0" Padding="16,12" BackgroundColor="White"
               ColumnDefinitions="*,Auto,Auto,Auto,Auto">
-			<VerticalStackLayout Grid.Column="0">
-				<Label Text="إدارة المنيو" FontSize="18" FontAttributes="Bold" TextColor="#212121" />
-				<Label Text="{Binding ProductsCount}" FontSize="12" TextColor="#757575" />
-			</VerticalStackLayout>
-			<Button Grid.Column="1" Text="➕ إضافة"
+            <VerticalStackLayout Grid.Column="0">
+                <Label Text="إدارة المنيو" FontSize="18" FontAttributes="Bold" TextColor="#212121" />
+                <Label Text="{Binding ProductsCount}" FontSize="12" TextColor="#757575" />
+            </VerticalStackLayout>
+            <Button Grid.Column="1" Text="➕ إضافة"
                     Command="{Binding AddProductCommand}"
                     BackgroundColor="#388E3C" TextColor="White"
                     CornerRadius="10" HeightRequest="40" Padding="12,0" Margin="4,0" />
-			<Button Grid.Column="2" Text="✏️ تعديل"
+            <Button Grid.Column="2" Text="✏️ تعديل"
                     Command="{Binding EditProductCommand}"
                     IsEnabled="{Binding SelectedProduct, Converter={StaticResource NotNullConverter}}"
                     BackgroundColor="#0288D1" TextColor="White"
                     CornerRadius="10" HeightRequest="40" Padding="12,0" Margin="4,0" />
-			<Button Grid.Column="3" Text="🔄"
+            <Button Grid.Column="3" Text="🔄"
                     Command="{Binding ToggleAvailabilityCommand}"
                     IsEnabled="{Binding SelectedProduct, Converter={StaticResource NotNullConverter}}"
                     BackgroundColor="#F57C00" TextColor="White"
                     CornerRadius="10" HeightRequest="40" WidthRequest="44" Margin="4,0" />
-			<Button Grid.Column="4" Text="🗑️"
+            <Button Grid.Column="4" Text="🗑️"
                     Command="{Binding DeleteProductCommand}"
                     IsEnabled="{Binding SelectedProduct, Converter={StaticResource NotNullConverter}}"
                     BackgroundColor="#D32F2F" TextColor="White"
                     CornerRadius="10" HeightRequest="40" WidthRequest="44" Margin="4,0" />
-		</Grid>
+        </Grid>
 
-		<!-- Category Filter -->
-		<ScrollView Grid.Row="1" Orientation="Horizontal"
+        <!-- Category Filter -->
+        <ScrollView Grid.Row="1" Orientation="Horizontal"
                     BackgroundColor="White" Padding="8,8">
-			<HorizontalStackLayout x:Name="categoryButtons" Spacing="8" Padding="8,0">
-				<BindableLayout.ItemsSource>
-					<Binding Path="Categories" />
-				</BindableLayout.ItemsSource>
-				<BindableLayout.ItemTemplate>
-					<DataTemplate x:DataType="x:String">
-						<Button Text="{Binding .}"
+            <HorizontalStackLayout x:Name="categoryButtons" Spacing="8" Padding="8,0">
+                <BindableLayout.ItemsSource>
+                    <Binding Path="Categories" />
+                </BindableLayout.ItemsSource>
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <Button Text="{Binding .}"
                                 Padding="16,6" CornerRadius="20" FontSize="12"
                                 BackgroundColor="#F5F5F5" TextColor="#757575"
                                 HeightRequest="36"
                                 Clicked="OnCategoryClicked" />
-					</DataTemplate>
-				</BindableLayout.ItemTemplate>
-			</HorizontalStackLayout>
-		</ScrollView>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </HorizontalStackLayout>
+        </ScrollView>
 
-		<!-- Products Grid -->
-		<RefreshView Grid.Row="2" Command="{Binding LoadCommand}" IsRefreshing="{Binding IsBusy}">
-			<CollectionView ItemsSource="{Binding Products}"
+        <!-- Products Grid -->
+        <RefreshView Grid.Row="2" Command="{Binding LoadCommand}" IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding Products}"
                             SelectionMode="None"
                             EmptyView="لا توجد منتجات">
 
-				<!-- Desktop: Grid layout | Mobile: list -->
-				<CollectionView.ItemsLayout>
-					<GridItemsLayout Orientation="Vertical"
+                <!-- Desktop: Grid layout | Mobile: list -->
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical"
                                      Span="{OnPlatform Default=3, Android=2, iOS=2}" />
-				</CollectionView.ItemsLayout>
+                </CollectionView.ItemsLayout>
 
-				<CollectionView.ItemTemplate>
-					<DataTemplate x:DataType="models:ProductDto">
-						<Frame Margin="6" CornerRadius="14" BackgroundColor="White"
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ProductDto">
+                        <Frame Margin="6" CornerRadius="14" BackgroundColor="White"
                                HasShadow="True" BorderColor="Transparent" Padding="12">
 
-							<!-- TapGestureRecognizer يحل مشكلة السيليكت على أندرويد -->
-							<Frame.GestureRecognizers>
-								<TapGestureRecognizer
+                            <!-- TapGestureRecognizer يحل مشكلة السيليكت على أندرويد -->
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MenuViewModel}},
                                              Path=SelectProductCommand}"
                                     CommandParameter="{Binding .}" />
-							</Frame.GestureRecognizers>
+                            </Frame.GestureRecognizers>
 
-							<VerticalStackLayout Spacing="6">
-								<!-- Image -->
-								<Frame CornerRadius="10" IsClippedToBounds="True"
+                            <VerticalStackLayout Spacing="6">
+                                <!-- Image -->
+                                <Frame CornerRadius="10" IsClippedToBounds="True"
                                        HeightRequest="120" Padding="0" BorderColor="Transparent">
-									<Image Source="{Binding ImageUrl}" Aspect="AspectFill"
-                                           HeightRequest="120" />
-								</Frame>
-								<!-- Name -->
-								<Label Text="{Binding Name}"
+                                    <ff:CachedImage Source="{Binding ImageUrl}"
+                                                    Aspect="AspectFill"
+                                                    HeightRequest="120"
+                                                    CacheDuration="30"
+                                                    RetryCount="2"
+                                                    RetryDelay="500"
+                                                    DownsampleToViewSize="True"
+                                                    LoadingPlaceholder="placeholder_food.png"
+                                                    ErrorPlaceholder="placeholder_food.png" />
+                                </Frame>
+                                <!-- Name -->
+                                <Label Text="{Binding Name}"
                                        FontAttributes="Bold" FontSize="14" TextColor="#212121"
                                        LineBreakMode="TailTruncation" MaxLines="2" />
-								<!-- Category -->
-								<Label Text="{Binding CategoryName}"
+                                <!-- Category -->
+                                <Label Text="{Binding CategoryName}"
                                        FontSize="11" TextColor="#9E9E9E" />
-								<!-- Price -->
-								<Grid ColumnDefinitions="*,Auto">
-									<Label Grid.Column="0"
+                                <!-- Price -->
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Grid.Column="0"
                                            Text="{Binding EffectivePrice, StringFormat='{0:F0} EGP'}"
                                            FontAttributes="Bold" FontSize="15" TextColor="#FF5722" />
-									<Label Grid.Column="1"
+                                    <Label Grid.Column="1"
                                            Text="{Binding AvailabilityText}"
                                            FontSize="11"
                                            TextColor="{Binding AvailabilityColor}"
                                            VerticalOptions="Center" />
-								</Grid>
-							</VerticalStackLayout>
-						</Frame>
-					</DataTemplate>
-				</CollectionView.ItemTemplate>
-			</CollectionView>
-		</RefreshView>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
 
-		<!-- Selected Product Info -->
-		<Frame Grid.Row="3"
+        <!-- Selected Product Info -->
+        <Frame Grid.Row="3"
                IsVisible="{Binding SelectedProduct, Converter={StaticResource NotNullConverter}}"
                BackgroundColor="White" BorderColor="#FF5722" CornerRadius="0" Padding="12,8">
-			<Grid ColumnDefinitions="*,Auto">
-				<Label Grid.Column="0"
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Grid.Column="0"
                        Text="{Binding SelectedProduct.Name, StringFormat='محدد: {0}'}"
                        FontSize="14" FontAttributes="Bold" TextColor="#212121"
                        VerticalOptions="Center" />
-				<Label Grid.Column="1"
+                <Label Grid.Column="1"
                        Text="{Binding SelectedProduct.AvailabilityText}"
                        TextColor="{Binding SelectedProduct.AvailabilityColor}"
                        FontSize="13" VerticalOptions="Center" />
-			</Grid>
-		</Frame>
+            </Grid>
+        </Frame>
 
-	</Grid>
+    </Grid>
 </ContentPage>

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using FFImageLoading.Maui;
 using Microsoft.Extensions.Logging;
 using RestaurantMaui.Services;
 using RestaurantMaui.ViewModels;
@@ -15,6 +16,7 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
+            .UseFFImageLoading()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -33,8 +35,6 @@ public static class MauiProgram
         builder.Services.AddTransient<SettingsViewModel>();
         builder.Services.AddTransient<OrderDetailViewModel>();
         builder.Services.AddTransient<ProductFormViewModel>();
-        builder.Services.AddTransient<CategoriesViewModel>();
-        builder.Services.AddTransient<CategoryFormViewModel>();
 
         // ── Pages ────────────────────────────────────────────────────────────────
         builder.Services.AddTransient<LoginPage>();
@@ -44,8 +44,6 @@ public static class MauiProgram
         builder.Services.AddTransient<SettingsPage>();
         builder.Services.AddTransient<OrderDetailPage>();
         builder.Services.AddTransient<ProductFormPage>();
-        builder.Services.AddTransient<CategoriesPage>();
-        builder.Services.AddTransient<CategoryFormPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

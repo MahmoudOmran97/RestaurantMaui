@@ -171,6 +171,8 @@ public class UpdateRestaurantDto
     public string Description { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
     public decimal DeliveryFee { get; set; }
     public decimal MinOrderAmount { get; set; }
     public int EstimatedTime { get; set; }
