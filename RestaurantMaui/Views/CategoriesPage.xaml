@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RestaurantMaui.ViewModels"
+             xmlns:models="clr-namespace:RestaurantMaui.Models"
+             x:Class="RestaurantMaui.Views.CategoriesPage"
+             x:DataType="vm:CategoriesViewModel"
+             BackgroundColor="#F5F5F5"
+             Title="الأقسام">
+
+	<Grid RowDefinitions="Auto,*,Auto">
+
+		<!-- Toolbar -->
+		<Grid Grid.Row="0" Padding="16,12" BackgroundColor="White"
+              ColumnDefinitions="*,Auto,Auto,Auto">
+			<VerticalStackLayout Grid.Column="0">
+				<Label Text="إدارة الأقسام" FontSize="18" FontAttributes="Bold" TextColor="#212121" />
+				<Label Text="{Binding CategoriesCount}" FontSize="12" TextColor="#757575" />
+			</VerticalStackLayout>
+			<Button Grid.Column="1" Text="➕ إضافة قسم"
+                    Command="{Binding AddCategoryCommand}"
+                    BackgroundColor="#388E3C" TextColor="White"
+                    CornerRadius="10" HeightRequest="40" Padding="12,0" Margin="4,0" />
+			<Button Grid.Column="2" Text="✏️ تعديل"
+                    Command="{Binding EditCategoryCommand}"
+                    IsEnabled="{Binding SelectedCategory, Converter={StaticResource NotNullConverter}}"
+                    BackgroundColor="#0288D1" TextColor="White"
+                    CornerRadius="10" HeightRequest="40" Padding="12,0" Margin="4,0" />
+			<Button Grid.Column="3" Text="🗑️"
+                    Command="{Binding DeleteCategoryCommand}"
+                    IsEnabled="{Binding SelectedCategory, Converter={StaticResource NotNullConverter}}"
+                    BackgroundColor="#D32F2F" TextColor="White"
+                    CornerRadius="10" HeightRequest="40" WidthRequest="44" Margin="4,0" />
+		</Grid>
+
+		<!-- Categories List -->
+		<RefreshView Grid.Row="1" Command="{Binding LoadCommand}" IsRefreshing="{Binding IsBusy}">
+			<CollectionView ItemsSource="{Binding Categories}"
+                            SelectionMode="None"
+                            EmptyView="لا توجد أقسام — اضغط ➕ لإضافة قسم جديد">
+
+				<CollectionView.ItemsLayout>
+					<GridItemsLayout Orientation="Vertical"
+                                     Span="{OnPlatform Default=3, Android=2, iOS=2}" />
+				</CollectionView.ItemsLayout>
+
+				<CollectionView.ItemTemplate>
+					<DataTemplate x:DataType="models:CategorySimpleDto">
+						<Frame Margin="6" CornerRadius="14" BackgroundColor="White"
+                               HasShadow="True" BorderColor="Transparent" Padding="0">
+
+							<Frame.GestureRecognizers>
+								<TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CategoriesViewModel}},
+                                             Path=SelectCategoryCommand}"
+                                    CommandParameter="{Binding .}" />
+							</Frame.GestureRecognizers>
+
+							<Grid RowDefinitions="120,Auto,Auto" RowSpacing="0">
+								<!-- Category Image -->
+								<Frame Grid.Row="0" CornerRadius="14" IsClippedToBounds="True"
+                                       Padding="0" BorderColor="Transparent"
+                                       BackgroundColor="#FFF3E0">
+									<Grid>
+										<Image Source="{Binding ImageUrl}" Aspect="AspectFill"
+                                               HeightRequest="120"
+                                               IsVisible="{Binding ImageUrl, Converter={StaticResource StringToBoolConverter}}" />
+										<Label Text="📂"
+                                               FontSize="48"
+                                               HorizontalOptions="Center" VerticalOptions="Center"
+                                               IsVisible="{Binding ImageUrl, Converter={StaticResource InverseBoolConverter}}" />
+									</Grid>
+								</Frame>
+
+								<!-- Category Name -->
+								<Label Grid.Row="1"
+                                       Text="{Binding Name}"
+                                       FontAttributes="Bold" FontSize="14" TextColor="#212121"
+                                       HorizontalOptions="Center"
+                                       Margin="8,8,8,2"
+                                       LineBreakMode="TailTruncation" />
+
+								<!-- Product Count -->
+								<Label Grid.Row="2"
+                                       Text="{Binding ProductCount, StringFormat='{0} منتج'}"
+                                       FontSize="12" TextColor="#FF5722"
+                                       HorizontalOptions="Center"
+                                       Margin="8,0,8,10" />
+							</Grid>
+						</Frame>
+					</DataTemplate>
+				</CollectionView.ItemTemplate>
+			</CollectionView>
+		</RefreshView>
+
+		<!-- Selected Category Info -->
+		<Frame Grid.Row="2"
+               IsVisible="{Binding SelectedCategory, Converter={StaticResource NotNullConverter}}"
+               BackgroundColor="White" BorderColor="#FF5722" CornerRadius="0" Padding="12,8">
+			<Grid ColumnDefinitions="*,Auto">
+				<Label Grid.Column="0"
+                       Text="{Binding SelectedCategory.Name, StringFormat='محدد: {0}'}"
+                       FontSize="14" FontAttributes="Bold" TextColor="#212121"
+                       VerticalOptions="Center" />
+				<Label Grid.Column="1"
+                       Text="{Binding SelectedCategory.ProductCount, StringFormat='{0} منتج'}"
+                       TextColor="#FF5722"
+                       FontSize="13" VerticalOptions="Center" />
+			</Grid>
+		</Frame>
+
+	</Grid>
+</ContentPage>

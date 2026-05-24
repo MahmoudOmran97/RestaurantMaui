@@ -16,6 +16,9 @@
         <Tab Title="المنيو" Icon="icon_menu.png">
             <ShellContent ContentTemplate="{DataTemplate views:MenuPage}" Route="MenuPage" />
         </Tab>
+        <Tab Title="الأقسام" Icon="icon_menu.png">
+            <ShellContent ContentTemplate="{DataTemplate views:CategoriesPage}" Route="CategoriesPage" />
+        </Tab>
         <Tab Title="الإعدادات" Icon="icon_settings.png">
             <ShellContent ContentTemplate="{DataTemplate views:SettingsPage}" Route="SettingsPage" />
         </Tab>

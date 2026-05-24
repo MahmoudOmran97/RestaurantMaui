@@ -7,95 +7,95 @@
              BackgroundColor="#F5F5F5"
              Title="{Binding PageTitle}">
 
-	<Shell.BackButtonBehavior>
-		<BackButtonBehavior Command="{Binding CancelCommand}" IsVisible="False" />
-	</Shell.BackButtonBehavior>
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding CancelCommand}" IsVisible="False" />
+    </Shell.BackButtonBehavior>
 
-	<ScrollView>
-		<VerticalStackLayout Padding="16" Spacing="16"
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16"
                              MaximumWidthRequest="500" HorizontalOptions="Center">
 
-			<!-- زر رجوع يدوي (لأن NavBar مخفي) -->
-			<Grid ColumnDefinitions="Auto,*" Margin="0,0,0,4">
-				<Button Grid.Column="0"
-                        Text="← رجوع"
+            <!-- زر رجوع يدوي (لان NavBar مخفي) -->
+            <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,4">
+                <Button Grid.Column="0"
+                        Text="&#x2190; رجوع"
                         Command="{Binding CancelCommand}"
                         BackgroundColor="Transparent"
                         TextColor="#FF5722"
                         FontSize="15" Padding="0"
                         HorizontalOptions="Start" />
-				<Label Grid.Column="1"
+                <Label Grid.Column="1"
                        Text="{Binding PageTitle}"
                        FontSize="18" FontAttributes="Bold"
                        TextColor="#212121"
                        HorizontalOptions="Center"
                        VerticalOptions="Center" />
-			</Grid>
+            </Grid>
 
-			<!-- Form Card -->
-			<Frame CornerRadius="16" BackgroundColor="White"
+            <!-- Form Card -->
+            <Frame CornerRadius="16" BackgroundColor="White"
                    HasShadow="True" BorderColor="Transparent" Padding="20">
-				<VerticalStackLayout Spacing="16">
+                <VerticalStackLayout Spacing="16">
 
-					<!-- اسم القسم -->
-					<VerticalStackLayout Spacing="4">
-						<Label Text="اسم القسم *" FontSize="13" TextColor="#757575" />
-						<Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
-							<Entry Text="{Binding Name}"
+                    <!-- اسم القسم -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="اسم القسم *" FontSize="13" TextColor="#757575" />
+                        <Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
+                            <Entry Text="{Binding Name}"
                                    Placeholder="مثال: المقبلات، الوجبات الرئيسية، المشروبات"
                                    BackgroundColor="Transparent" Margin="8,2" FontSize="15" />
-						</Border>
-					</VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
 
-					<!-- رابط الصورة -->
-					<VerticalStackLayout Spacing="4">
-						<Label Text="رابط صورة القسم (اختياري)" FontSize="13" TextColor="#757575" />
-						<Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
-							<Entry Text="{Binding ImageUrl}"
+                    <!-- رابط الصورة -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="رابط صورة القسم (اختياري)" FontSize="13" TextColor="#757575" />
+                        <Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
+                            <Entry Text="{Binding ImageUrl}"
                                    Placeholder="https://..."
                                    BackgroundColor="Transparent" Margin="8,2" FontSize="13"
                                    Keyboard="Url" />
-						</Border>
-					</VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
 
-					<!-- الترتيب (يظهر فقط في وضع التعديل) -->
-					<VerticalStackLayout Spacing="4"
+                    <!-- الترتيب (يظهر فقط في وضع التعديل) -->
+                    <VerticalStackLayout Spacing="4"
                                          IsVisible="{Binding IsEdit}">
-						<Label Text="الترتيب في القائمة" FontSize="13" TextColor="#757575" />
-						<Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
-							<Entry Text="{Binding SortOrder}"
+                        <Label Text="الترتيب في القائمة" FontSize="13" TextColor="#757575" />
+                        <Border StrokeShape="RoundRectangle 10" Stroke="#E0E0E0" StrokeThickness="1.5">
+                            <Entry Text="{Binding SortOrder}"
                                    Keyboard="Numeric"
                                    BackgroundColor="Transparent" Margin="8,2" FontSize="15" />
-						</Border>
-					</VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
 
-					<!-- Error Message -->
-					<Label Text="{Binding ErrorMsg}"
+                    <!-- Error Message -->
+                    <Label Text="{Binding ErrorMsg}"
                            TextColor="#D32F2F" FontSize="13"
                            IsVisible="{Binding ErrorMsg, Converter={StaticResource StringToBoolConverter}}"
                            HorizontalOptions="Center" />
 
-				</VerticalStackLayout>
-			</Frame>
+                </VerticalStackLayout>
+            </Frame>
 
-			<!-- Buttons -->
-			<Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-				<Button Grid.Column="0" Text="إلغاء"
+            <!-- Buttons -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <Button Grid.Column="0" Text="إلغاء"
                         Command="{Binding CancelCommand}"
                         BackgroundColor="#9E9E9E" TextColor="White"
                         CornerRadius="12" HeightRequest="52" FontSize="16" />
-				<Button Grid.Column="1"
+                <Button Grid.Column="1"
                         Text="{Binding IsEdit, Converter={StaticResource BoolToStringConverter},
-                               ConverterParameter='💾 حفظ التعديلات|➕ إضافة القسم'}"
+                               ConverterParameter='&#x1F4BE; حفظ التعديلات|&#x2795; إضافة القسم'}"
                         Command="{Binding SaveCommand}"
                         IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
                         BackgroundColor="#FF5722" TextColor="White"
                         CornerRadius="12" HeightRequest="52" FontSize="16" FontAttributes="Bold" />
-			</Grid>
+            </Grid>
 
-			<ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
                                Color="#FF5722" HorizontalOptions="Center" />
 
-		</VerticalStackLayout>
-	</ScrollView>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

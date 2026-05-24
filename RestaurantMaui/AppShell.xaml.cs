@@ -11,5 +11,6 @@ public partial class AppShell : Shell
         // تسجيل الصفحات التي تُفتح بالـ Navigation (مش Tabs)
         Routing.RegisterRoute(nameof(OrderDetailPage), typeof(OrderDetailPage));
         Routing.RegisterRoute(nameof(ProductFormPage), typeof(ProductFormPage));
+        Routing.RegisterRoute(nameof(CategoryFormPage), typeof(CategoryFormPage));
     }
 }
