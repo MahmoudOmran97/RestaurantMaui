@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RestaurantMaui.Models;
 using RestaurantMaui.Services;
@@ -17,6 +17,7 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty] int pendingOrders = 0;
     [ObservableProperty] int preparingOrders = 0;
     [ObservableProperty] string restaurantName = string.Empty;
+    [ObservableProperty] string errorMessage = string.Empty;
 
     public ObservableCollection<OrderDetail> RecentOrders { get; } = [];
 
@@ -34,11 +35,19 @@ public partial class DashboardViewModel : ObservableObject
     {
         if (IsBusy) return;
         IsBusy = true;
+        ErrorMessage = string.Empty;
         try
         {
-            var stats = await _api.GetDashboardStatsAsync(AppSession.RestaurantId);
-            var orders = await _api.GetRestaurantOrdersAsync(AppSession.RestaurantId, null, 1, 20);
-            var rest = await _api.GetRestaurantAsync(AppSession.RestaurantId);
+            var statsTask = _api.GetDashboardStatsAsync(AppSession.RestaurantId);
+            var ordersTask = _api.GetRestaurantOrdersAsync(AppSession.RestaurantId, null, 1, 20);
+            var restTask = _api.GetRestaurantAsync(AppSession.RestaurantId);
+
+            // FIX: تشغيل الـ 3 requests بالتوازي بدل واحدة واحدة
+            await Task.WhenAll(statsTask, ordersTask, restTask);
+
+            var stats = await statsTask;
+            var orders = await ordersTask;
+            var rest = await restTask;
 
             TodayOrders = stats.TodayOrders;
             TodayRevenue = $"{stats.TodayRevenue:F0} EGP";
@@ -48,6 +57,10 @@ public partial class DashboardViewModel : ObservableObject
 
             RecentOrders.Clear();
             foreach (var o in orders) RecentOrders.Add(o);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "خطأ في تحميل البيانات: " + ex.Message;
         }
         finally { IsBusy = false; }
     }

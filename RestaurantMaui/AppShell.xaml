@@ -7,10 +7,10 @@
        FlyoutBehavior="Disabled">
 
     <TabBar>
-        <Tab Title="الرئيسية" Icon="icon_dashboard.png">
+        <Tab Title="الرئيسية" Icon="tab_home.svg">
             <ShellContent ContentTemplate="{DataTemplate views:DashboardPage}" Route="DashboardPage" />
         </Tab>
-        <Tab Title="الطلبات" Icon="icon_orders.png">
+        <Tab Title="الطلبات" Icon="tab_orders.svg">
             <ShellContent ContentTemplate="{DataTemplate views:OrdersPage}" Route="OrdersPage" />
         </Tab>
         <Tab Title="المنيو" Icon="icon_menu.png">
@@ -19,7 +19,7 @@
         <Tab Title="الأقسام" Icon="icon_menu.png">
             <ShellContent ContentTemplate="{DataTemplate views:CategoriesPage}" Route="CategoriesPage" />
         </Tab>
-        <Tab Title="الإعدادات" Icon="icon_settings.png">
+        <Tab Title="الإعدادات" Icon="tab_settings.svg">
             <ShellContent ContentTemplate="{DataTemplate views:SettingsPage}" Route="SettingsPage" />
         </Tab>
     </TabBar>

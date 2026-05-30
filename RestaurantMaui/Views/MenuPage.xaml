@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:RestaurantMaui.ViewModels"
              xmlns:models="clr-namespace:RestaurantMaui.Models"
-             xmlns:ff="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
              x:Class="RestaurantMaui.Views.MenuPage"
              x:DataType="vm:MenuViewModel"
              BackgroundColor="#F5F5F5"
@@ -86,16 +85,17 @@
                             <VerticalStackLayout Spacing="6">
                                 <!-- Image -->
                                 <Frame CornerRadius="10" IsClippedToBounds="True"
-                                       HeightRequest="120" Padding="0" BorderColor="Transparent">
-                                    <ff:CachedImage Source="{Binding ImageUrl}"
-                                                    Aspect="AspectFill"
-                                                    HeightRequest="120"
-                                                    CacheDuration="30"
-                                                    RetryCount="2"
-                                                    RetryDelay="500"
-                                                    DownsampleToViewSize="True"
-                                                    LoadingPlaceholder="placeholder_food.png"
-                                                    ErrorPlaceholder="placeholder_food.png" />
+                                       HeightRequest="120" Padding="0" BorderColor="Transparent"
+                                       BackgroundColor="#FFF3E0">
+                                    <Grid>
+                                        <Image Source="{Binding FullImageUrl}"
+                                               Aspect="AspectFill"
+                                               HeightRequest="120"
+                                               IsVisible="{Binding FullImageUrl, Converter={StaticResource StringToBoolConverter}}" />
+                                        <Label Text="🍽️" FontSize="40"
+                                               HorizontalOptions="Center" VerticalOptions="Center"
+                                               IsVisible="{Binding FullImageUrl, Converter={StaticResource InverseBoolConverter}}" />
+                                    </Grid>
                                 </Frame>
                                 <!-- Name -->
                                 <Label Text="{Binding Name}"

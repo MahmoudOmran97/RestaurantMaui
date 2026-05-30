@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 namespace RestaurantMaui.Models;
 
@@ -55,7 +55,8 @@ public class PagedResult<T> where T : class
     [JsonProperty("total")] public int Total { get; set; }
     [JsonProperty("page")] public int Page { get; set; }
     [JsonProperty("pageSize")] public int PageSize { get; set; }
-    [JsonProperty("totalPages")] public int TotalPages { get; set; }
+    // FIX: API بيرجع "total" و "pageSize" - نحسب totalPages بنفسنا
+    public int TotalPages => PageSize > 0 ? (int)Math.Ceiling((double)Total / PageSize) : 0;
     [JsonProperty("data")] public List<T> Data { get; set; } = [];
 }
 
@@ -83,6 +84,17 @@ public class ProductDto
     [JsonProperty("isAvailable")] public bool IsAvailable { get; set; }
     [JsonProperty("categoryName")] public string? CategoryName { get; set; }
     [JsonProperty("categoryId")] public int CategoryId { get; set; }
+
+    // FIX: بناء Full URL للصورة
+    public string? FullImageUrl
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(ImageUrl)) return null;
+            if (ImageUrl.StartsWith("http")) return ImageUrl;
+            return AppConfig.BaseUrl.TrimEnd('/') + "/" + ImageUrl.TrimStart('/');
+        }
+    }
 
     public decimal EffectivePrice =>
         DiscountedPrice > 0 && DiscountedPrice < Price ? DiscountedPrice : Price;
@@ -120,18 +132,20 @@ public class OrderDetail
     [JsonProperty("estimatedDelivery")] public int EstimatedDelivery { get; set; }
     [JsonProperty("cancellationReason")] public string? CancellationReason { get; set; }
     [JsonProperty("createdAt")] public DateTime CreatedAt { get; set; }
-    [JsonProperty("acceptedAt")] public DateTime AcceptedAt { get; set; }
-    [JsonProperty("pickedUpAt")] public DateTime PickedUpAt { get; set; }
-    [JsonProperty("deliveredAt")] public DateTime DeliveredAt { get; set; }
+    [JsonProperty("acceptedAt")] public DateTime? AcceptedAt { get; set; }
+    [JsonProperty("pickedUpAt")] public DateTime? PickedUpAt { get; set; }
+    [JsonProperty("deliveredAt")] public DateTime? DeliveredAt { get; set; }
     [JsonProperty("restaurant")] public OrderRestaurantInfo? Restaurant { get; set; }
     [JsonProperty("items")] public List<OrderItemDto> Items { get; set; } = [];
     [JsonProperty("customerName")] public string CustomerName { get; set; } = string.Empty;
+    // FIX: API بيرجع customerName بس مش customerPhone (commented out in API)
+    // عشان مايحصلش null reference، بنحطه empty string
     [JsonProperty("customerPhone")] public string CustomerPhone { get; set; } = string.Empty;
 
-    // Helper properties for UI
     public string StatusArabic => AppTheme.StatusArabic(Status);
     public Color StatusColor => AppTheme.StatusColor(Status);
     public string TotalFormatted => $"{TotalAmount:F0} EGP";
+    // FIX: CreatedAt بييجي بصيغة UTC من الـ API
     public string CreatedFormatted => CreatedAt.ToLocalTime().ToString("hh:mm tt  dd/MM/yyyy");
     public string[] NextStatuses => AppTheme.NextStatuses(Status);
     public bool CanChangeStatus => NextStatuses.Length > 0;
@@ -207,7 +221,9 @@ public class ApiResult
     public bool Ok { get; set; }
     public string Error { get; set; } = string.Empty;
 }
-// قسم مبسّط للعرض في قائمة الأقسام
+
+// ─── Categories Simple ────────────────────────────────────────────────────────
+
 public class CategorySimpleDto
 {
     [JsonProperty("id")] public int Id { get; set; }
@@ -217,7 +233,6 @@ public class CategorySimpleDto
     [JsonProperty("productCount")] public int ProductCount { get; set; }
 }
 
-// لإضافة قسم جديد
 public class CreateCategoryRequest
 {
     public int RestaurantId { get; set; }
@@ -225,7 +240,6 @@ public class CreateCategoryRequest
     public string? ImageUrl { get; set; }
 }
 
-// لتعديل قسم
 public class UpdateCategoryRequest
 {
     public string Name { get; set; } = string.Empty;

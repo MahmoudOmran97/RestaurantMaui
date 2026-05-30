@@ -1,10 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RestaurantMaui.Models;
 using RestaurantMaui.Services;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Xml.Linq;
 
 namespace RestaurantMaui.ViewModels;
 
@@ -77,7 +75,7 @@ public partial class ProductFormViewModel : ObservableObject
             Description = Description,
             Price = decimal.TryParse(Price, out var p) ? p : 0,
             DiscountedPrice = decimal.TryParse(DiscountedPrice, out var dp) ? dp : 0,
-            ImageUrl = ImageUrl,
+            ImageUrl = string.IsNullOrWhiteSpace(ImageUrl) ? null : ImageUrl,
             PreparationTime = int.TryParse(PreparationTime, out var pt) ? pt : 15,
             Calories = int.TryParse(Calories, out var cal) ? cal : 0,
         };

@@ -24,6 +24,13 @@
                             CornerRadius="10" HeightRequest="40" Padding="16,0" />
 				</Grid>
 
+				<!-- Error Message -->
+				<Label Text="{Binding ErrorMessage}"
+				       TextColor="#D32F2F" FontSize="14"
+				       IsVisible="{Binding ErrorMessage, Converter={StaticResource StringToBoolConverter}}"
+				       HorizontalOptions="Center"
+				       BackgroundColor="#FFEBEE" Padding="12,8" />
+
 				<!-- Stat Cards - على الديسك توب يتحط جنب بعض -->
 				<FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Start">
 

@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Headers;
+using System.Net.Http.Headers;
 using System.Text;
 using Newtonsoft.Json;
 using RestaurantMaui.Models;
@@ -15,7 +15,10 @@ public class ApiService
         {
             ServerCertificateCustomValidationCallback = (_, _, _, _) => true
         };
-        _http = new HttpClient(handler);
+        _http = new HttpClient(handler)
+        {
+            Timeout = TimeSpan.FromSeconds(30)
+        };
     }
 
     private void SetAuth()
@@ -24,52 +27,67 @@ public class ApiService
             _http.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", AppSession.Token);
     }
+
+    // ── Categories ──────────────────────────────────────────────────────────────
+
     public async Task<List<CategorySimpleDto>?> GetCategoriesAsync(int restaurantId)
     {
         SetAuth();
-        var res = await _http.GetAsync($"{AppConfig.ApiBaseUrl}/categories/restaurant/{restaurantId}");
-        if (!res.IsSuccessStatusCode) return null;
-        return Deserialize<List<CategorySimpleDto>>(await res.Content.ReadAsStringAsync());
+        try
+        {
+            var res = await _http.GetAsync($"{AppConfig.ApiBaseUrl}/categories/restaurant/{restaurantId}");
+            if (!res.IsSuccessStatusCode) return null;
+            return Deserialize<List<CategorySimpleDto>>(await res.Content.ReadAsStringAsync());
+        }
+        catch { return null; }
     }
 
     public async Task<ApiResult> CreateCategoryAsync(CreateCategoryRequest req)
     {
         SetAuth();
-        var res = await _http.PostAsync($"{AppConfig.ApiBaseUrl}/categories", ToJson(req));
-        return res.IsSuccessStatusCode
-            ? new ApiResult { Ok = true }
-            : new ApiResult { Ok = false, Error = "فشل إضافة القسم: " + res.StatusCode };
+        try
+        {
+            var res = await _http.PostAsync($"{AppConfig.ApiBaseUrl}/categories", ToJson(req));
+            return res.IsSuccessStatusCode
+                ? new ApiResult { Ok = true }
+                : new ApiResult { Ok = false, Error = "فشل إضافة القسم: " + res.StatusCode };
+        }
+        catch (Exception ex)
+        {
+            return new ApiResult { Ok = false, Error = "خطأ في الاتصال: " + ex.Message };
+        }
     }
 
     public async Task<ApiResult> UpdateCategoryAsync(int id, UpdateCategoryRequest req)
     {
         SetAuth();
-        var res = await _http.PutAsync($"{AppConfig.ApiBaseUrl}/categories/{id}", ToJson(req));
-        return res.IsSuccessStatusCode
-            ? new ApiResult { Ok = true }
-            : new ApiResult { Ok = false, Error = "فشل تعديل القسم: " + res.StatusCode };
+        try
+        {
+            var res = await _http.PutAsync($"{AppConfig.ApiBaseUrl}/categories/{id}", ToJson(req));
+            return res.IsSuccessStatusCode
+                ? new ApiResult { Ok = true }
+                : new ApiResult { Ok = false, Error = "فشل تعديل القسم: " + res.StatusCode };
+        }
+        catch (Exception ex)
+        {
+            return new ApiResult { Ok = false, Error = "خطأ في الاتصال: " + ex.Message };
+        }
     }
 
     public async Task<ApiResult> DeleteCategoryAsync(int id)
     {
         SetAuth();
-        var res = await _http.DeleteAsync($"{AppConfig.ApiBaseUrl}/categories/{id}");
-        return res.IsSuccessStatusCode
-            ? new ApiResult { Ok = true }
-            : new ApiResult { Ok = false, Error = "فشل حذف القسم: " + res.StatusCode };
-    }
-    private static StringContent ToJson(object obj) =>
-        new(JsonConvert.SerializeObject(obj), Encoding.UTF8, "application/json");
-
-    private static T? Deserialize<T>(string json)
-    {
-        if (string.IsNullOrEmpty(json)) return default;
-        var settings = new JsonSerializerSettings
+        try
         {
-            NullValueHandling = NullValueHandling.Ignore,
-            ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
-        };
-        return JsonConvert.DeserializeObject<T>(json, settings);
+            var res = await _http.DeleteAsync($"{AppConfig.ApiBaseUrl}/categories/{id}");
+            return res.IsSuccessStatusCode
+                ? new ApiResult { Ok = true }
+                : new ApiResult { Ok = false, Error = "فشل حذف القسم: " + res.StatusCode };
+        }
+        catch (Exception ex)
+        {
+            return new ApiResult { Ok = false, Error = "خطأ في الاتصال: " + ex.Message };
+        }
     }
 
     // ── Auth ────────────────────────────────────────────────────────────────────
@@ -87,6 +105,9 @@ public class ApiService
                 return new LoginResult { Ok = false, Error = "خطأ في تسجيل الدخول" };
 
             var data = Deserialize<LoginResponse>(body);
+            if (data is null)
+                return new LoginResult { Ok = false, Error = "استجابة غير صحيحة من السيرفر" };
+
             return new LoginResult { Ok = true, Data = data };
         }
         catch (Exception ex)
@@ -100,33 +121,52 @@ public class ApiService
     public async Task<PagedResult<RestaurantDto>?> GetRestaurantsAsync(int page = 1, int pageSize = 50)
     {
         SetAuth();
-        var res = await _http.GetAsync($"{AppConfig.ApiBaseUrl}/restaurants?page={page}&pageSize={pageSize}");
-        if (!res.IsSuccessStatusCode) return null;
-        return Deserialize<PagedResult<RestaurantDto>>(await res.Content.ReadAsStringAsync());
+        try
+        {
+            var res = await _http.GetAsync($"{AppConfig.ApiBaseUrl}/restaurants?page={page}&pageSize={pageSize}");
+            if (!res.IsSuccessStatusCode) return null;
+            return Deserialize<PagedResult<RestaurantDto>>(await res.Content.ReadAsStringAsync());
+        }
+        catch { return null; }
     }
 
     public async Task<RestaurantDto?> GetRestaurantAsync(int id)
     {
         SetAuth();
-        var res = await _http.GetAsync($"{AppConfig.ApiBaseUrl}/restaurants/{id}");
-        if (!res.IsSuccessStatusCode) return null;
-        return Deserialize<RestaurantDto>(await res.Content.ReadAsStringAsync());
+        try
+        {
+            var res = await _http.GetAsync($"{AppConfig.ApiBaseUrl}/restaurants/{id}");
+            if (!res.IsSuccessStatusCode) return null;
+            return Deserialize<RestaurantDto>(await res.Content.ReadAsStringAsync());
+        }
+        catch { return null; }
     }
 
     public async Task<ApiResult> UpdateRestaurantAsync(int id, UpdateRestaurantDto dto)
     {
         SetAuth();
-        var res = await _http.PutAsync($"{AppConfig.ApiBaseUrl}/restaurants/{id}/desktop-update", ToJson(dto));
-        return res.IsSuccessStatusCode
-            ? new ApiResult { Ok = true }
-            : new ApiResult { Ok = false, Error = "فشل تحديث بيانات المطعم: " + res.StatusCode };
+        try
+        {
+            var res = await _http.PutAsync($"{AppConfig.ApiBaseUrl}/restaurants/{id}/desktop-update", ToJson(dto));
+            return res.IsSuccessStatusCode
+                ? new ApiResult { Ok = true }
+                : new ApiResult { Ok = false, Error = "فشل تحديث بيانات المطعم: " + res.StatusCode };
+        }
+        catch (Exception ex)
+        {
+            return new ApiResult { Ok = false, Error = "خطأ في الاتصال: " + ex.Message };
+        }
     }
 
     public async Task<bool> ToggleRestaurantStatusAsync(int id)
     {
         SetAuth();
-        var res = await _http.PutAsync($"{AppConfig.ApiBaseUrl}/restaurants/{id}/toggle-status", null);
-        return res.IsSuccessStatusCode;
+        try
+        {
+            var res = await _http.PutAsync($"{AppConfig.ApiBaseUrl}/restaurants/{id}/toggle-status", null);
+            return res.IsSuccessStatusCode;
+        }
+        catch { return false; }
     }
 
     // ── Menu ────────────────────────────────────────────────────────────────────
@@ -134,41 +174,66 @@ public class ApiService
     public async Task<List<CategoryDto>?> GetMenuAsync(int restaurantId)
     {
         SetAuth();
-        var res = await _http.GetAsync($"{AppConfig.ApiBaseUrl}/restaurants/{restaurantId}/menu");
-        if (!res.IsSuccessStatusCode) return null;
-        return Deserialize<List<CategoryDto>>(await res.Content.ReadAsStringAsync());
+        try
+        {
+            var res = await _http.GetAsync($"{AppConfig.ApiBaseUrl}/restaurants/{restaurantId}/menu");
+            if (!res.IsSuccessStatusCode) return null;
+            return Deserialize<List<CategoryDto>>(await res.Content.ReadAsStringAsync());
+        }
+        catch { return null; }
     }
 
     public async Task<ApiResult> CreateProductAsync(CreateProductRequest req)
     {
         SetAuth();
-        var res = await _http.PostAsync($"{AppConfig.ApiBaseUrl}/products", ToJson(req));
-        return res.IsSuccessStatusCode
-            ? new ApiResult { Ok = true }
-            : new ApiResult { Ok = false, Error = "فشل إضافة المنتج" };
+        try
+        {
+            var res = await _http.PostAsync($"{AppConfig.ApiBaseUrl}/products", ToJson(req));
+            if (res.IsSuccessStatusCode) return new ApiResult { Ok = true };
+            var err = await res.Content.ReadAsStringAsync();
+            return new ApiResult { Ok = false, Error = "فشل إضافة المنتج: " + res.StatusCode };
+        }
+        catch (Exception ex)
+        {
+            return new ApiResult { Ok = false, Error = "خطأ في الاتصال: " + ex.Message };
+        }
     }
 
     public async Task<ApiResult> UpdateProductAsync(int id, CreateProductRequest req)
     {
         SetAuth();
-        var res = await _http.PutAsync($"{AppConfig.ApiBaseUrl}/products/{id}", ToJson(req));
-        return res.IsSuccessStatusCode
-            ? new ApiResult { Ok = true }
-            : new ApiResult { Ok = false, Error = "فشل تعديل المنتج" };
+        try
+        {
+            var res = await _http.PutAsync($"{AppConfig.ApiBaseUrl}/products/{id}", ToJson(req));
+            if (res.IsSuccessStatusCode) return new ApiResult { Ok = true };
+            return new ApiResult { Ok = false, Error = "فشل تعديل المنتج: " + res.StatusCode };
+        }
+        catch (Exception ex)
+        {
+            return new ApiResult { Ok = false, Error = "خطأ في الاتصال: " + ex.Message };
+        }
     }
 
     public async Task<bool> ToggleProductAvailabilityAsync(int id)
     {
         SetAuth();
-        var res = await _http.PutAsync($"{AppConfig.ApiBaseUrl}/products/{id}/toggle-availability", null);
-        return res.IsSuccessStatusCode;
+        try
+        {
+            var res = await _http.PutAsync($"{AppConfig.ApiBaseUrl}/products/{id}/toggle-availability", null);
+            return res.IsSuccessStatusCode;
+        }
+        catch { return false; }
     }
 
     public async Task<bool> DeleteProductAsync(int id)
     {
         SetAuth();
-        var res = await _http.DeleteAsync($"{AppConfig.ApiBaseUrl}/products/{id}");
-        return res.IsSuccessStatusCode;
+        try
+        {
+            var res = await _http.DeleteAsync($"{AppConfig.ApiBaseUrl}/products/{id}");
+            return res.IsSuccessStatusCode;
+        }
+        catch { return false; }
     }
 
     // ── Orders ──────────────────────────────────────────────────────────────────
@@ -177,14 +242,18 @@ public class ApiService
         int restaurantId, string? status = null, int page = 1, int pageSize = 100)
     {
         SetAuth();
-        var url = $"{AppConfig.ApiBaseUrl}/orders/restaurant/{restaurantId}?page={page}&pageSize={pageSize}";
-        if (!string.IsNullOrEmpty(status)) url += "&status=" + status;
+        try
+        {
+            var url = $"{AppConfig.ApiBaseUrl}/orders/restaurant/{restaurantId}?page={page}&pageSize={pageSize}";
+            if (!string.IsNullOrEmpty(status)) url += "&status=" + status;
 
-        var res = await _http.GetAsync(url);
-        if (!res.IsSuccessStatusCode) return [];
+            var res = await _http.GetAsync(url);
+            if (!res.IsSuccessStatusCode) return [];
 
-        var paged = Deserialize<PagedResult<OrderDetail>>(await res.Content.ReadAsStringAsync());
-        return paged?.Data ?? [];
+            var paged = Deserialize<PagedResult<OrderDetail>>(await res.Content.ReadAsStringAsync());
+            return paged?.Data ?? [];
+        }
+        catch { return []; }
     }
 
     public async Task<List<OrderDetail>> GetAllRestaurantOrdersAsync(
@@ -207,24 +276,39 @@ public class ApiService
 
     public async Task<ApiResult> UpdateOrderStatusAsync(int orderId, string newStatus)
     {
-        var url = $"{AppConfig.ApiBaseUrl}/orders/{orderId}/restaurant-status";
-        var res = await _http.PutAsync(url, ToJson(new UpdateStatusRequest { Status = newStatus }));
-        return res.IsSuccessStatusCode
-            ? new ApiResult { Ok = true }
-            : new ApiResult { Ok = false, Error = "فشل تحديث الحالة: " + res.StatusCode };
+        // FIX: كانت ناقصة SetAuth() - بيتسبب في 401 Unauthorized
+        SetAuth();
+        try
+        {
+            var url = $"{AppConfig.ApiBaseUrl}/orders/{orderId}/restaurant-status";
+            var res = await _http.PutAsync(url, ToJson(new UpdateStatusRequest { Status = newStatus }));
+            return res.IsSuccessStatusCode
+                ? new ApiResult { Ok = true }
+                : new ApiResult { Ok = false, Error = "فشل تحديث الحالة: " + res.StatusCode };
+        }
+        catch (Exception ex)
+        {
+            return new ApiResult { Ok = false, Error = "خطأ في الاتصال: " + ex.Message };
+        }
     }
 
     // ── Dashboard ────────────────────────────────────────────────────────────────
 
     public async Task<DashboardStats> GetDashboardStatsAsync(int restaurantId)
     {
-        var orders = await GetAllRestaurantOrdersAsync(restaurantId);
-        var today = DateTime.Today;
+        // FIX: استخدام صفحة واحدة بس للـ Dashboard بدل تحميل كل الأوردرات
+        var orders = await GetRestaurantOrdersAsync(restaurantId, null, 1, 200);
+        // FIX: مقارنة UTC مع UTC
+        var today = DateTime.UtcNow.Date;
         var stats = new DashboardStats();
 
         foreach (var o in orders)
         {
-            if (o.CreatedAt.Date == today)
+            var orderDate = o.CreatedAt.Kind == DateTimeKind.Utc
+                ? o.CreatedAt.Date
+                : o.CreatedAt.ToUniversalTime().Date;
+
+            if (orderDate == today)
             {
                 stats.TodayOrders++;
                 if (o.Status == "Delivered") stats.TodayRevenue += o.TotalAmount;
@@ -233,5 +317,21 @@ public class ApiService
             if (o.Status is "Accepted" or "Preparing") stats.PreparingOrders++;
         }
         return stats;
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────────────
+
+    private static StringContent ToJson(object obj) =>
+        new(JsonConvert.SerializeObject(obj), Encoding.UTF8, "application/json");
+
+    private static T? Deserialize<T>(string json)
+    {
+        if (string.IsNullOrEmpty(json)) return default;
+        var settings = new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore,
+            ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
+        };
+        return JsonConvert.DeserializeObject<T>(json, settings);
     }
 }

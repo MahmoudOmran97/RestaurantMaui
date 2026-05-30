@@ -1,10 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RestaurantMaui.Models;
 using RestaurantMaui.Services;
-using System.Data;
-using static SkiaSharp.HarfBuzz.SKShaper;
-
 
 namespace RestaurantMaui.ViewModels;
 
@@ -141,6 +138,6 @@ public partial class SettingsViewModel : ObservableObject
     void Logout()
     {
         AppSession.Clear();
-        Application.Current!.Windows[0].Page = new NavigationPage(new Views.LoginPage());
+        App.NavigateToLogin();
     }
 }
